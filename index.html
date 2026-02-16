@@ -9,87 +9,91 @@
 <body>
     <div class="container">
         <header>
-            <h1>Nim Sum Master</h1>
-            <p class="subtitle">Master Combinatorial Game Theory Through Play</p>
+            <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="zh-TW">繁</button>
+            </div>
+            <h1 data-i18n="title">Nim Sum Master</h1>
+            <p class="subtitle" data-i18n="subtitle">Master Combinatorial Game Theory Through Play</p>
         </header>
 
         <nav class="main-nav">
-            <button class="nav-btn active" data-section="home">Home</button>
-            <button class="nav-btn" data-section="single-pile">1 Pile</button>
-            <button class="nav-btn" data-section="two-piles">2 Piles</button>
-            <button class="nav-btn" data-section="multi-piles">Multi-Piles</button>
-            <button class="nav-btn" data-section="theory">Learn Theory</button>
-            <button class="nav-btn" data-section="practice">Practice</button>
+            <button class="nav-btn active" data-section="home" data-i18n="nav.home">Home</button>
+            <button class="nav-btn" data-section="single-pile" data-i18n="nav.single">1 Pile</button>
+            <button class="nav-btn" data-section="two-piles" data-i18n="nav.two">2 Piles</button>
+            <button class="nav-btn" data-section="multi-piles" data-i18n="nav.multi">Multi-Piles</button>
+            <button class="nav-btn" data-section="theory" data-i18n="nav.theory">Learn Theory</button>
+            <button class="nav-btn" data-section="practice" data-i18n="nav.practice">Practice</button>
         </nav>
 
         <!-- Home Section -->
         <section id="home" class="section active">
             <div class="welcome-card">
-                <h2>Welcome to Nim Sum Master!</h2>
-                <p>Learn the winning strategy for the classic Game of Nim - a fundamental concept in Combinatorial Game Theory often featured in Math Olympiad competitions.</p>
+                <h2 data-i18n="home.welcome">Welcome to Nim Sum Master!</h2>
+                <p data-i18n="home.intro">Learn the winning strategy for the classic Game of Nim - a fundamental concept in Combinatorial Game Theory often featured in Math Olympiad competitions.</p>
                 
                 <div class="feature-grid">
                     <div class="feature-card">
                         <div class="feature-icon">1</div>
-                        <h3>Single Pile</h3>
-                        <p>Start with basics - learn when you can guarantee a win with one pile of matchsticks.</p>
+                        <h3 data-i18n="home.singleTitle">Single Pile</h3>
+                        <p data-i18n="home.singleDesc">Start with basics - learn when you can guarantee a win with one pile of matchsticks.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">2</div>
-                        <h3>Two Piles</h3>
-                        <p>Master the strategy for two-pile games using the XOR principle.</p>
+                        <h3 data-i18n="home.twoTitle">Two Piles</h3>
+                        <p data-i18n="home.twoDesc">Master the strategy for two-pile games using the XOR principle.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">N</div>
-                        <h3>Multi-Piles</h3>
-                        <p>Apply Nim Sum theory to any number of piles and never lose again!</p>
+                        <h3 data-i18n="home.multiTitle">Multi-Piles</h3>
+                        <p data-i18n="home.multiDesc">Apply Nim Sum theory to any number of piles and never lose again!</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">?</div>
-                        <h3>Learn Theory</h3>
-                        <p>Understand the mathematical theory behind the winning strategy.</p>
+                        <h3 data-i18n="home.theoryTitle">Learn Theory</h3>
+                        <p data-i18n="home.theoryDesc">Understand the mathematical theory behind the winning strategy.</p>
                     </div>
                 </div>
 
-                <button class="start-btn" onclick="navigateTo('single-pile')">Start Learning!</button>
+                <button class="start-btn" onclick="navigateTo('single-pile')" data-i18n="home.startBtn">Start Learning!</button>
             </div>
         </section>
 
         <!-- Single Pile Section -->
         <section id="single-pile" class="section">
-            <h2>Single Pile Game</h2>
+            <h2 data-i18n="single.title">Single Pile Game</h2>
             <div class="game-info">
-                <p><strong>Rules:</strong> Two players take turns removing 1 to <span id="max-take-display">3</span> matchsticks from a pile. The player who takes the last matchstick <span id="last-wins-text">wins</span>!</p>
+                <p><strong data-i18n="single.rulesLabel">Rules:</strong> <span id="single-rules-text">Two players take turns removing 1 to <span id="max-take-display">3</span> matchsticks from a pile. The player who takes the last matchstick <span id="last-wins-text">wins</span>!</span></p>
             </div>
 
             <div class="settings-panel">
                 <div class="setting">
-                    <label>Pile Size:</label>
+                    <label data-i18n="single.pileSize">Pile Size:</label>
                     <input type="number" id="single-pile-size" value="12" min="1" max="50">
                 </div>
                 <div class="setting">
-                    <label>Max Take Per Turn:</label>
+                    <label data-i18n="single.maxTake">Max Take Per Turn:</label>
                     <input type="number" id="single-max-take" value="3" min="1" max="10">
                 </div>
                 <div class="setting">
-                    <label>Last Matchstick:</label>
+                    <label data-i18n="single.lastMatch">Last Matchstick:</label>
                     <select id="single-last-wins">
-                        <option value="true">Wins</option>
-                        <option value="false">Loses</option>
+                        <option value="true" data-i18n="single.winsOption">Wins</option>
+                        <option value="false" data-i18n="single.losesOption">Loses</option>
                     </select>
                 </div>
-                <button class="btn" onclick="startSinglePileGame()">Start Game</button>
-                <button class="btn secondary" onclick="showSinglePileStrategy()">Show Strategy</button>
+                <button class="btn" onclick="startSinglePileGame()" data-i18n="single.startGame">Start Game</button>
+                <button class="btn secondary" onclick="showSinglePileStrategy()" data-i18n="single.showStrategy">Show Strategy</button>
             </div>
 
             <div id="single-pile-game" class="game-board hidden">
                 <div class="pile-container">
                     <div class="pile" id="single-pile-display"></div>
-                    <p class="pile-count">Remaining: <span id="single-remaining">0</span></p>
+                    <p class="pile-count"><span data-i18n="single.remaining">Remaining:</span> <span id="single-remaining">0</span></p>
                 </div>
 
                 <div class="turn-info">
-                    <p id="single-turn-text">Your Turn</p>
+                    <p id="single-turn-text" data-i18n="single.yourTurn">Your Turn</p>
                     <p id="single-status"></p>
                 </div>
 
@@ -97,82 +101,82 @@
             </div>
 
             <div id="single-strategy" class="strategy-panel hidden">
-                <h3>Strategy Analysis</h3>
+                <h3 data-i18n="single.strategyTitle">Strategy Analysis</h3>
                 <div id="single-strategy-content"></div>
             </div>
         </section>
 
         <!-- Two Piles Section -->
         <section id="two-piles" class="section">
-            <h2>Two Piles Game</h2>
+            <h2 data-i18n="two.title">Two Piles Game</h2>
             <div class="game-info">
-                <p><strong>Rules:</strong> There are 2 piles of different number of matchsticks. Two players take turns removing any number of matchsticks from ONE of the piles. The player who takes the last matchstick wins! How many matchsticks should the first mover take to guarantee a win?</p>
+                <p><strong>Rules:</strong> <span data-i18n="two.rules">There are 2 piles of different number of matchsticks. Two players take turns removing any number of matchsticks from ONE of the piles. The player who takes the last matchstick wins! How many matchsticks should the first mover take to guarantee a win?</span></p>
             </div>
 
             <div class="settings-panel">
                 <div class="setting">
-                    <label>Pile 1:</label>
+                    <label data-i18n="two.pile1">Pile 1:</label>
                     <input type="number" id="pile1-size" value="22" min="1" max="50">
                 </div>
                 <div class="setting">
-                    <label>Pile 2:</label>
+                    <label data-i18n="two.pile2">Pile 2:</label>
                     <input type="number" id="pile2-size" value="36" min="1" max="50">
                 </div>
                 <div class="setting">
-                    <label>Who Goes First:</label>
+                    <label data-i18n="two.whoFirst">Who Goes First:</label>
                     <select id="two-first-player">
-                        <option value="player">You</option>
-                        <option value="computer">Computer</option>
+                        <option value="player" data-i18n="two.you">You</option>
+                        <option value="computer" data-i18n="two.computer">Computer</option>
                     </select>
                 </div>
-                <button class="btn" onclick="startTwoPilesGame()">Start Game</button>
-                <button class="btn secondary" onclick="showTwoPilesStrategy()">Show Strategy</button>
+                <button class="btn" onclick="startTwoPilesGame()" data-i18n="two.startGame">Start Game</button>
+                <button class="btn secondary" onclick="showTwoPilesStrategy()" data-i18n="two.showStrategy">Show Strategy</button>
             </div>
 
             <div id="two-piles-game" class="game-board hidden">
                 <div class="piles-row">
                     <div class="pile-container" onclick="selectPile(0)">
-                        <h4>Pile 1</h4>
+                        <h4 data-i18n="two.pile1">Pile 1</h4>
                         <div class="pile" id="pile1-display"></div>
                         <p class="pile-count"><span id="pile1-remaining">0</span></p>
                     </div>
                     <div class="pile-container" onclick="selectPile(1)">
-                        <h4>Pile 2</h4>
+                        <h4 data-i18n="two.pile2">Pile 2</h4>
                         <div class="pile" id="pile2-display"></div>
                         <p class="pile-count"><span id="pile2-remaining">0</span></p>
                     </div>
                 </div>
 
                 <div class="turn-info">
-                    <p id="two-turn-text">Your Turn</p>
-                    <p id="two-nim-sum">Nim Sum: <span id="nim-sum-value">0</span></p>
+                    <p id="two-turn-text" data-i18n="two.yourTurn">Your Turn</p>
+                    <p id="two-nim-sum"><span data-i18n="two.nimSum">Nim Sum:</span> <span id="nim-sum-value">0</span></p>
                     <p id="two-status"></p>
                 </div>
 
                 <div id="two-pile-select" class="hidden">
-                    <p>Selected Pile: <span id="selected-pile-num">-</span></p>
-                    <label>Take:</label>
+                    <p><span data-i18n="two.selectedPile">Selected Pile:</span> <span id="selected-pile-num">-</span></p>
+                    <label data-i18n="two.takeLbl">Take:</label>
                     <input type="number" id="two-take-amount" value="1" min="1">
-                    <button class="btn" onclick="makeTwoPilesMove()">Take</button>
+                    <button class="btn" onclick="makeTwoPilesMove()" data-i18n="two.takeBtn">Take</button>
                 </div>
             </div>
 
             <div id="two-strategy" class="strategy-panel hidden">
-                <h3>Strategy Analysis</h3>
+                <h3 data-i18n="two.strategyTitle">Strategy Analysis</h3>
                 <div id="two-strategy-content"></div>
             </div>
         </section>
 
         <!-- Multi-Piles Section -->
         <section id="multi-piles" class="section">
-            <h2>Multi-Piles Nim Game</h2>
+            <h2 data-i18n="multi.title">Multi-Piles Nim Game</h2>
             <div class="game-info">
-                <p><strong>Rules:</strong> Multiple piles of matchsticks. Take any number from ONE pile per turn. Last matchstick wins!</p>
+                <p><strong>Rules:</strong> <span data-i18n="multi.rules">Multiple piles of matchsticks. Take any number from ONE pile per turn. Last matchstick wins!</span></p>
             </div>
 
             <div class="settings-panel">
                 <div class="setting">
-                    <label>Number of Piles:</label>
+                    <label data-i18n="multi.numPiles">Number of Piles:</label>
                     <input type="number" id="num-piles" value="3" min="2" max="6" onchange="updatePileInputs()">
                 </div>
                 <div id="pile-inputs" class="pile-inputs">
@@ -189,423 +193,56 @@
                         <input type="number" class="multi-pile-input" value="7" min="1" max="50">
                     </div>
                 </div>
-                <button class="btn" onclick="startMultiPilesGame()">Start Game</button>
-                <button class="btn secondary" onclick="showMultiPilesStrategy()">Show Strategy</button>
-                <button class="btn secondary" onclick="randomizeMultiPiles()">Random Setup</button>
+                <button class="btn" onclick="startMultiPilesGame()" data-i18n="multi.startGame">Start Game</button>
+                <button class="btn secondary" onclick="showMultiPilesStrategy()" data-i18n="multi.showStrategy">Show Strategy</button>
+                <button class="btn secondary" onclick="randomizeMultiPiles()" data-i18n="multi.randomSetup">Random Setup</button>
             </div>
 
             <div id="multi-piles-game" class="game-board hidden">
                 <div class="piles-row" id="multi-piles-display"></div>
 
                 <div class="turn-info">
-                    <p id="multi-turn-text">Your Turn</p>
+                    <p id="multi-turn-text" data-i18n="multi.yourTurn">Your Turn</p>
                     <div id="multi-nim-sum-display" class="nim-sum-breakdown"></div>
                     <p id="multi-status"></p>
                 </div>
 
                 <div id="multi-pile-select" class="hidden">
-                    <p>Selected Pile: <span id="multi-selected-pile-num">-</span></p>
-                    <label>Take:</label>
+                    <p><span data-i18n="multi.selectedPile">Selected Pile:</span> <span id="multi-selected-pile-num">-</span></p>
+                    <label data-i18n="multi.takeLbl">Take:</label>
                     <input type="number" id="multi-take-amount" value="1" min="1">
-                    <button class="btn" onclick="makeMultiPilesMove()">Take</button>
+                    <button class="btn" onclick="makeMultiPilesMove()" data-i18n="multi.takeBtn">Take</button>
                 </div>
             </div>
 
             <div id="multi-strategy" class="strategy-panel hidden">
-                <h3>Strategy Analysis</h3>
+                <h3 data-i18n="multi.strategyTitle">Strategy Analysis</h3>
                 <div id="multi-strategy-content"></div>
             </div>
         </section>
 
         <!-- Theory Section -->
         <section id="theory" class="section">
-            <h2>Nim Sum Theory</h2>
-            
-            <div class="theory-content">
-                <div class="theory-card">
-                    <h3>What is the Game of Nim?</h3>
-                    <p>Nim is a mathematical strategy game where two players take turns removing objects from distinct piles. On each turn, a player must remove at least one object, and may remove any number of objects provided they all come from the same pile. The goal is typically to be the player who takes the last object.</p>
-                </div>
-
-                <div class="theory-card">
-                    <h3>Understanding Binary Numbers</h3>
-                    <p>Before we learn the winning strategy, we need to understand <strong>binary numbers</strong> - the language computers use!</p>
-                    
-                    <div class="example-box">
-                        <h4>What is Binary?</h4>
-                        <p>In our everyday life, we use the <strong>decimal system</strong> (base 10) with digits 0-9. Binary is the <strong>base 2 system</strong> that only uses two digits: <strong>0</strong> and <strong>1</strong>.</p>
-                        <p>Each position in binary represents a power of 2, just like decimal positions represent powers of 10.</p>
-                    </div>
-
-                    <div class="example-box">
-                        <h4>The 4-2-1 Method (Easy Way to Understand Binary!)</h4>
-                        <p>Think of binary as breaking down numbers into groups of <strong>powers of 2</strong>:</p>
-                        <table class="binary-table">
-                            <tr>
-                                <th>Position</th>
-                                <th>...</th>
-                                <th>16</th>
-                                <th>8</th>
-                                <th>4</th>
-                                <th>2</th>
-                                <th>1</th>
-                            </tr>
-                            <tr>
-                                <td>Power of 2</td>
-                                <td>...</td>
-                                <td>2<sup>4</sup></td>
-                                <td>2<sup>3</sup></td>
-                                <td>2<sup>2</sup></td>
-                                <td>2<sup>1</sup></td>
-                                <td>2<sup>0</sup></td>
-                            </tr>
-                        </table>
-                        <p style="margin-top: 15px;">To convert a number to binary, ask: "Can I fit this power of 2 into my number?"</p>
-                        <ul>
-                            <li>If YES, write <strong>1</strong> and subtract that value</li>
-                            <li>If NO, write <strong>0</strong> and move to the next smaller power</li>
-                        </ul>
-                    </div>
-
-                    <div class="example-box">
-                        <h4>Example: Why is 3 = 011 in binary?</h4>
-                        <p>Let's break down <strong>3</strong> using powers of 2:</p>
-                        <ul>
-                            <li>Can we fit <strong>4</strong> into 3? NO (4 > 3) → write <strong>0</strong></li>
-                            <li>Can we fit <strong>2</strong> into 3? YES (2 ≤ 3) → write <strong>1</strong>, remaining: 3-2 = 1</li>
-                            <li>Can we fit <strong>1</strong> into 1? YES (1 ≤ 1) → write <strong>1</strong>, remaining: 1-1 = 0</li>
-                        </ul>
-                        <p><strong>Result: 3 = 0×4 + 1×2 + 1×1 = 011</strong></p>
-                    </div>
-
-                    <div class="example-box">
-                        <h4>Example: Why is 5 = 101 in binary?</h4>
-                        <p>Let's break down <strong>5</strong>:</p>
-                        <ul>
-                            <li>Can we fit <strong>4</strong> into 5? YES → write <strong>1</strong>, remaining: 5-4 = 1</li>
-                            <li>Can we fit <strong>2</strong> into 1? NO (2 > 1) → write <strong>0</strong></li>
-                            <li>Can we fit <strong>1</strong> into 1? YES → write <strong>1</strong>, remaining: 0</li>
-                        </ul>
-                        <p><strong>Result: 5 = 1×4 + 0×2 + 1×1 = 101</strong></p>
-                    </div>
-
-                    <div class="example-box">
-                        <h4>Example: Why is 7 = 111 in binary?</h4>
-                        <p>Let's break down <strong>7</strong>:</p>
-                        <ul>
-                            <li>Can we fit <strong>4</strong> into 7? YES → write <strong>1</strong>, remaining: 7-4 = 3</li>
-                            <li>Can we fit <strong>2</strong> into 3? YES → write <strong>1</strong>, remaining: 3-2 = 1</li>
-                            <li>Can we fit <strong>1</strong> into 1? YES → write <strong>1</strong>, remaining: 0</li>
-                        </ul>
-                        <p><strong>Result: 7 = 1×4 + 1×2 + 1×1 = 111</strong></p>
-                    </div>
-                </div>
-
-                <div class="theory-card">
-                    <h3>What is XOR (Exclusive OR)?</h3>
-                    <p>XOR is a special operation that compares two bits (0 or 1) and follows this simple rule:</p>
-                    <div class="xor-explanation">
-                        <p><strong>"If the bits are DIFFERENT, result is 1. If they're the SAME, result is 0."</strong></p>
-                    </div>
-                    
-                    <div class="example-box">
-                        <h4>XOR Truth Table:</h4>
-                        <table class="xor-table">
-                            <tr><th>A</th><th>B</th><th>A XOR B</th><th>Why?</th></tr>
-                            <tr><td>0</td><td>0</td><td>0</td><td>Same → 0</td></tr>
-                            <tr><td>0</td><td>1</td><td>1</td><td>Different → 1</td></tr>
-                            <tr><td>1</td><td>0</td><td>1</td><td>Different → 1</td></tr>
-                            <tr><td>1</td><td>1</td><td>0</td><td>Same → 0</td></tr>
-                        </table>
-                    </div>
-
-                    <div class="example-box">
-                        <h4>Think of XOR as "Odd One Out"</h4>
-                        <p>When you XOR multiple numbers together column by column:</p>
-                        <ul>
-                            <li>If there's an <strong>ODD</strong> number of 1s in a column → result is <strong>1</strong></li>
-                            <li>If there's an <strong>EVEN</strong> number of 1s in a column → result is <strong>0</strong></li>
-                        </ul>
-                        <p>This is why pairs of identical bits "cancel out" to zero!</p>
-                    </div>
-                </div>
-
-                <div class="theory-card">
-                    <h3>The Nim Sum (XOR Operation)</h3>
-                    <p>The key to winning Nim is the <strong>Nim Sum</strong>, calculated by XORing all pile sizes together.</p>
-
-                    <div class="example-box">
-                        <h4>Example: Piles of 3, 5, 7</h4>
-                        <pre>
-3 in binary:  011  (0×4 + 1×2 + 1×1)
-5 in binary:  101  (1×4 + 0×2 + 1×1)
-7 in binary:  111  (1×4 + 1×2 + 1×1)
-              ---
-XOR result:   001 = 1 (Nim Sum)
-
-Column by column:
-- 4's column: 0 XOR 1 XOR 1 = 0 (even 1s)
-- 2's column: 1 XOR 0 XOR 1 = 0 (even 1s)
-- 1's column: 1 XOR 1 XOR 1 = 1 (odd 1s)
-                        </pre>
-                        <p>Since Nim Sum ≠ 0, the first player can guarantee a win!</p>
-                    </div>
-                </div>
-
-                <div class="theory-card highlight-card">
-                    <h3>The Easy 4-2-1 Pairing Method</h3>
-                    <p>Here's a simpler way to think about Nim Sum without doing binary math in your head!</p>
-                    
-                    <div class="example-box">
-                        <h4>The Pairing Strategy</h4>
-                        <p>For each power of 2 (1, 2, 4, 8, 16...), count how many piles have that component:</p>
-                        <ul>
-                            <li>If the count is <strong>EVEN</strong> (0, 2, 4...) → That position is "balanced" (good!)</li>
-                            <li>If the count is <strong>ODD</strong> (1, 3, 5...) → That position is "unbalanced" (contributes to Nim Sum)</li>
-                        </ul>
-                        <p><strong>Goal: Make ALL positions balanced (even counts) to achieve Nim Sum = 0!</strong></p>
-                    </div>
-
-                    <div class="example-box">
-                        <h4>Example: Piles of 3, 5, 7 using Pairing</h4>
-                        <table class="pairing-table">
-                            <tr>
-                                <th>Pile</th>
-                                <th>Has 4?</th>
-                                <th>Has 2?</th>
-                                <th>Has 1?</th>
-                            </tr>
-                            <tr>
-                                <td>3 = 2+1</td>
-                                <td>No</td>
-                                <td>Yes</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>5 = 4+1</td>
-                                <td>Yes</td>
-                                <td>No</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>7 = 4+2+1</td>
-                                <td>Yes</td>
-                                <td>Yes</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr class="count-row">
-                                <td><strong>Count:</strong></td>
-                                <td>2 (even)</td>
-                                <td>2 (even)</td>
-                                <td>3 (odd!)</td>
-                            </tr>
-                        </table>
-                        <p style="margin-top: 15px;">The "1" column has an odd count (3), so Nim Sum ≠ 0.</p>
-                        <p><strong>Winning move:</strong> Remove 1 from pile of 3, making it 2. Now all columns are even!</p>
-                    </div>
-
-                    <div class="example-box">
-                        <h4>Example: Piles of 1, 3, 5, 7 - A Famous Nim Position!</h4>
-                        <table class="pairing-table">
-                            <tr>
-                                <th>Pile</th>
-                                <th>Has 4?</th>
-                                <th>Has 2?</th>
-                                <th>Has 1?</th>
-                            </tr>
-                            <tr>
-                                <td>1 = 1</td>
-                                <td>No</td>
-                                <td>No</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>3 = 2+1</td>
-                                <td>No</td>
-                                <td>Yes</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>5 = 4+1</td>
-                                <td>Yes</td>
-                                <td>No</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td>7 = 4+2+1</td>
-                                <td>Yes</td>
-                                <td>Yes</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr class="count-row">
-                                <td><strong>Count:</strong></td>
-                                <td>2 (even)</td>
-                                <td>2 (even)</td>
-                                <td>4 (even)</td>
-                            </tr>
-                        </table>
-                        <p style="margin-top: 15px;"><strong>All columns are even!</strong> Nim Sum = 0. The first player is in a LOSING position!</p>
-                        <p>This is a famous "losing" starting position in Nim.</p>
-                    </div>
-                </div>
-
-                <div class="theory-card">
-                    <h3>The Winning Strategy</h3>
-                    <div class="strategy-rules">
-                        <div class="rule">
-                            <span class="rule-num">1</span>
-                            <div>
-                                <strong>Calculate the Nim Sum</strong>
-                                <p>XOR all pile sizes together (or use the pairing method).</p>
-                            </div>
-                        </div>
-                        <div class="rule">
-                            <span class="rule-num">2</span>
-                            <div>
-                                <strong>If Nim Sum ≠ 0: You're in a WINNING position!</strong>
-                                <p>Make a move that results in Nim Sum = 0 for your opponent.</p>
-                            </div>
-                        </div>
-                        <div class="rule">
-                            <span class="rule-num">3</span>
-                            <div>
-                                <strong>If Nim Sum = 0: You're in a LOSING position</strong>
-                                <p>Any move you make will give your opponent Nim Sum ≠ 0.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="theory-card">
-                    <h3>Finding the Winning Move</h3>
-                    <p>When Nim Sum ≠ 0, to find which pile to reduce:</p>
-                    <ol>
-                        <li>Calculate the Nim Sum (N) of all piles</li>
-                        <li>Find a pile P where P XOR N &lt; P</li>
-                        <li>Reduce that pile to (P XOR N)</li>
-                    </ol>
-                    
-                    <div class="example-box">
-                        <h4>Example: Piles of 22 and 36</h4>
-                        <pre>
-22 in binary: 010110  (16+4+2 = 22)
-36 in binary: 100100  (32+4 = 36)
-              ------
-Nim Sum:      110010 = 50
-
-Check pile 22: 22 XOR 50 = 36 (NOT less than 22, can't use)
-Check pile 36: 36 XOR 50 = 22 (22 < 36, YES!)
-
-Solution: Take 14 from pile of 36 (36 - 22 = 14)
-Result: Both piles at 22, Nim Sum = 0
-                        </pre>
-                    </div>
-
-                    <div class="example-box">
-                        <h4>Using Pairing Method for 22 and 36:</h4>
-                        <table class="pairing-table">
-                            <tr>
-                                <th>Pile</th>
-                                <th>32</th>
-                                <th>16</th>
-                                <th>8</th>
-                                <th>4</th>
-                                <th>2</th>
-                                <th>1</th>
-                            </tr>
-                            <tr>
-                                <td>22 = 16+4+2</td>
-                                <td>No</td>
-                                <td>Yes</td>
-                                <td>No</td>
-                                <td>Yes</td>
-                                <td>Yes</td>
-                                <td>No</td>
-                            </tr>
-                            <tr>
-                                <td>36 = 32+4</td>
-                                <td>Yes</td>
-                                <td>No</td>
-                                <td>No</td>
-                                <td>Yes</td>
-                                <td>No</td>
-                                <td>No</td>
-                            </tr>
-                            <tr class="count-row">
-                                <td><strong>Count:</strong></td>
-                                <td>1 (odd)</td>
-                                <td>1 (odd)</td>
-                                <td>0 (even)</td>
-                                <td>2 (even)</td>
-                                <td>1 (odd)</td>
-                                <td>0 (even)</td>
-                            </tr>
-                        </table>
-                        <p style="margin-top: 15px;">Columns 32, 16, and 2 are odd. We need to balance them!</p>
-                        <p><strong>Solution:</strong> Change pile 36 to 22. New 22 = 16+4+2, so now both piles are identical and all columns are even (paired)!</p>
-                    </div>
-                </div>
-
-                <div class="theory-card">
-                    <h3>Single Pile Strategy (Subtraction Game)</h3>
-                    <p>When you can only take 1 to k objects per turn from a single pile:</p>
-                    <ul>
-                        <li><strong>Winning positions:</strong> Pile size NOT divisible by (k+1)</li>
-                        <li><strong>Losing positions:</strong> Pile size divisible by (k+1)</li>
-                    </ul>
-                    <p>Strategy: Leave your opponent with a multiple of (k+1) after your turn.</p>
-                    
-                    <div class="example-box">
-                        <h4>Example: 12 matchsticks, max take 3</h4>
-                        <p>k+1 = 4, Multiples: 0, 4, 8, 12...</p>
-                        <p>Since 12 is a multiple of 4, the first player is in a LOSING position (if opponent plays perfectly).</p>
-                    </div>
-                </div>
-
-                <div class="theory-card">
-                    <h3>Why Does This Work?</h3>
-                    <p>The XOR/pairing strategy works because:</p>
-                    <ul>
-                        <li>The end state (all piles empty) has Nim Sum = 0</li>
-                        <li>From any position with Nim Sum ≠ 0, there exists a move to make Nim Sum = 0</li>
-                        <li>From any position with Nim Sum = 0, ALL moves result in Nim Sum ≠ 0</li>
-                    </ul>
-                    <p>This creates a "trap" - once you achieve Nim Sum = 0, your opponent cannot escape!</p>
-                    
-                    <div class="example-box">
-                        <h4>The Key Insight</h4>
-                        <p>When all columns are "paired" (even counts), removing ANY amount from ONE pile will break at least one pairing. Your opponent will always give you an unbalanced position, and you can always rebalance it!</p>
-                    </div>
-                </div>
-
-                <div class="interactive-calculator">
-                    <h3>Nim Sum Calculator</h3>
-                    <div class="calculator-input">
-                        <label>Enter pile sizes (comma-separated):</label>
-                        <input type="text" id="calc-input" placeholder="e.g., 3, 5, 7">
-                        <button class="btn" onclick="calculateNimSum()">Calculate</button>
-                    </div>
-                    <div id="calc-result" class="calc-result"></div>
-                </div>
-            </div>
+            <h2 data-i18n="theory.title">Nim Sum Theory</h2>
+            <div class="theory-content" id="theory-content"></div>
         </section>
 
         <!-- Practice Section -->
         <section id="practice" class="section">
-            <h2>Practice Problems</h2>
-            <p class="practice-intro">Test your understanding with these Math Olympiad-style problems!</p>
+            <h2 data-i18n="practice.title">Practice Problems</h2>
+            <p class="practice-intro" data-i18n="practice.intro">Test your understanding with these Math Olympiad-style problems!</p>
 
             <div id="practice-problem" class="practice-card">
                 <div class="problem-header">
-                    <span class="problem-number">Problem <span id="problem-num">1</span></span>
+                    <span class="problem-number"><span data-i18n="practice.problemLabel">Problem</span> <span id="problem-num">1</span></span>
                     <span class="problem-difficulty" id="problem-difficulty">Easy</span>
                 </div>
                 <div id="problem-text" class="problem-text"></div>
                 <div class="answer-section">
-                    <input type="number" id="user-answer" placeholder="Your answer">
-                    <button class="btn" onclick="checkAnswer()">Check Answer</button>
-                    <button class="btn secondary" onclick="showHint()">Hint</button>
-                    <button class="btn secondary" onclick="showSolution()">Solution</button>
+                    <input type="number" id="user-answer" data-i18n-placeholder="practice.yourAnswer" placeholder="Your answer">
+                    <button class="btn" onclick="checkAnswer()" data-i18n="practice.checkAnswer">Check Answer</button>
+                    <button class="btn secondary" onclick="showHint()" data-i18n="practice.hint">Hint</button>
+                    <button class="btn secondary" onclick="showSolution()" data-i18n="practice.solution">Solution</button>
                 </div>
                 <div id="feedback" class="feedback hidden"></div>
                 <div id="hint-box" class="hint-box hidden"></div>
@@ -613,22 +250,23 @@ Result: Both piles at 22, Nim Sum = 0
             </div>
 
             <div class="practice-nav">
-                <button class="btn" onclick="prevProblem()">Previous</button>
-                <button class="btn" onclick="nextProblem()">Next Problem</button>
-                <button class="btn secondary" onclick="randomProblem()">Random</button>
+                <button class="btn" onclick="prevProblem()" data-i18n="practice.previous">Previous</button>
+                <button class="btn" onclick="nextProblem()" data-i18n="practice.next">Next Problem</button>
+                <button class="btn secondary" onclick="randomProblem()" data-i18n="practice.random">Random</button>
             </div>
 
             <div class="score-display">
-                <p>Score: <span id="score">0</span> / <span id="total-attempted">0</span></p>
+                <p><span data-i18n="practice.score">Score:</span> <span id="score">0</span> / <span id="total-attempted">0</span></p>
             </div>
         </section>
 
         <footer>
-            <p>Nim Sum Master - Learn Combinatorial Game Theory</p>
-            <p>Perfect for Math Olympiad preparation!</p>
+            <p data-i18n="footer.line1">Nim Sum Master - Learn Combinatorial Game Theory</p>
+            <p data-i18n="footer.line2">Perfect for Math Olympiad preparation!</p>
         </footer>
     </div>
 
+    <script src="translations.js"></script>
     <script src="game.js"></script>
 </body>
 </html>

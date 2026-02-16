@@ -34,6 +34,40 @@ header {
     text-align: center;
     padding: 30px 0;
     color: white;
+    position: relative;
+}
+
+/* Language Toggle */
+.lang-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 5px;
+    background: rgba(255,255,255,0.2);
+    padding: 5px;
+    border-radius: 25px;
+}
+
+.lang-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.lang-btn.active {
+    background: white;
+    color: var(--primary);
 }
 
 header h1 {

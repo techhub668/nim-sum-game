@@ -43,13 +43,17 @@ function renderMatchsticks(container, count) {
     }
 }
 
+function pileLabel(i) {
+    return currentLang === 'zh-TW' ? `\u7B2C ${i + 1} \u5806` : `Pile ${i + 1}`;
+}
+
 function showNimSumBreakdown(piles) {
     const maxBits = Math.max(...piles.map(p => p.toString(2).length));
     let html = '';
     
     piles.forEach((pile, i) => {
         const binary = toBinary(pile, maxBits);
-        html += `Pile ${i + 1}: ${pile.toString().padStart(3)} = ${binary}\n`;
+        html += `${pileLabel(i)}: ${pile.toString().padStart(3)} = ${binary}\n`;
     });
     
     const nimSum = calculateNimSumFromArray(piles);
@@ -58,9 +62,9 @@ function showNimSumBreakdown(piles) {
     html += `Nim Sum: ${nimSum.toString().padStart(3)} = ${nimSumBinary}`;
     
     if (nimSum === 0) {
-        html += `\n\nPosition: LOSING (for current player)`;
+        html += `\n\n${t('analysis.position')} ${t('analysis.losing')}`;
     } else {
-        html += `\n\nPosition: WINNING (for current player)`;
+        html += `\n\n${t('analysis.position')} ${t('analysis.winning')}`;
     }
     
     return html;
@@ -91,7 +95,7 @@ function startSinglePileGame() {
     };
     
     document.getElementById('max-take-display').textContent = maxTake;
-    document.getElementById('last-wins-text').textContent = lastWins ? 'wins' : 'loses';
+    document.getElementById('last-wins-text').textContent = lastWins ? t('single.wins') : t('single.loses');
     
     document.getElementById('single-pile-game').classList.remove('hidden');
     document.getElementById('single-strategy').classList.add('hidden');
@@ -112,19 +116,23 @@ function updateSinglePileDisplay() {
     actionsContainer.innerHTML = '';
     
     if (singlePileState.playerTurn) {
-        document.getElementById('single-turn-text').textContent = 'Your Turn';
-        document.getElementById('single-status').textContent = `Take 1 to ${Math.min(singlePileState.maxTake, singlePileState.remaining)} matchsticks`;
+        document.getElementById('single-turn-text').textContent = t('single.yourTurn');
+        const maxCanTake = Math.min(singlePileState.maxTake, singlePileState.remaining);
+        const statusText = currentLang === 'zh-TW' 
+            ? `\u53D6\u8D70 1 \u5230 ${maxCanTake} \u6839\u706B\u67F4`
+            : `Take 1 to ${maxCanTake} matchsticks`;
+        document.getElementById('single-status').textContent = statusText;
         
-        for (let i = 1; i <= Math.min(singlePileState.maxTake, singlePileState.remaining); i++) {
+        for (let i = 1; i <= maxCanTake; i++) {
             const btn = document.createElement('button');
             btn.className = 'btn';
-            btn.textContent = `Take ${i}`;
+            btn.textContent = currentLang === 'zh-TW' ? `\u53D6\u8D70 ${i} \u6839` : `Take ${i}`;
             btn.onclick = () => makeSinglePileMove(i);
             actionsContainer.appendChild(btn);
         }
     } else {
-        document.getElementById('single-turn-text').textContent = "Computer's Turn";
-        document.getElementById('single-status').textContent = 'Thinking...';
+        document.getElementById('single-turn-text').textContent = t('single.computerTurn');
+        document.getElementById('single-status').textContent = t('single.thinking');
         setTimeout(computerSinglePileMove, 1000);
     }
 }
@@ -147,16 +155,13 @@ function computerSinglePileMove() {
     let take;
     
     if (lastWins) {
-        // Want to leave opponent with multiple of (maxTake + 1)
         const targetRemainder = remaining % (maxTake + 1);
         if (targetRemainder === 0) {
-            // Bad position, take random
             take = Math.floor(Math.random() * Math.min(maxTake, remaining)) + 1;
         } else {
             take = targetRemainder;
         }
     } else {
-        // Want to leave opponent with multiple of (maxTake + 1) + 1
         const targetRemainder = (remaining - 1) % (maxTake + 1);
         if (targetRemainder === 0 && remaining > 1) {
             take = Math.floor(Math.random() * Math.min(maxTake, remaining - 1)) + 1;
@@ -170,7 +175,8 @@ function computerSinglePileMove() {
     take = Math.min(take, remaining);
     singlePileState.remaining -= take;
     
-    document.getElementById('single-status').textContent = `Computer took ${take}`;
+    const statusText = currentLang === 'zh-TW' ? `\u96FB\u8166\u53D6\u8D70\u4E86 ${take} \u6839` : `Computer took ${take}`;
+    document.getElementById('single-status').textContent = statusText;
     
     if (singlePileState.remaining <= 0) {
         singlePileState.gameOver = true;
@@ -186,10 +192,10 @@ function showSinglePileGameOver(playerWins) {
     const actionsContainer = document.getElementById('single-actions');
     actionsContainer.innerHTML = `
         <div class="game-over ${playerWins ? '' : 'lost'}">
-            <h3 class="${playerWins ? 'winner' : 'loser'}">${playerWins ? 'You Win!' : 'You Lose!'}</h3>
-            <p>${playerWins ? 'Great strategy!' : 'Try again with the optimal strategy!'}</p>
-            <button class="btn" onclick="startSinglePileGame()">Play Again</button>
-            <button class="btn secondary" onclick="showSinglePileStrategy()">Learn Strategy</button>
+            <h3 class="${playerWins ? 'winner' : 'loser'}">${playerWins ? t('game.youWin') : t('game.youLose')}</h3>
+            <p>${playerWins ? t('game.winMsg') : t('game.loseMsg')}</p>
+            <button class="btn" onclick="startSinglePileGame()">${t('game.playAgain')}</button>
+            <button class="btn secondary" onclick="showSinglePileStrategy()">${t('game.learnStrategy')}</button>
         </div>
     `;
     updateSinglePileDisplay();
@@ -206,45 +212,43 @@ function showSinglePileStrategy() {
     const modulus = maxTake + 1;
     const remainder = pileSize % modulus;
     
-    let html = `<h4>Analysis for ${pileSize} matchsticks, max take ${maxTake}</h4>`;
-    html += `<p><strong>Key Number:</strong> k + 1 = ${maxTake} + 1 = ${modulus}</p>`;
-    html += `<p><strong>Calculation:</strong> ${pileSize} mod ${modulus} = ${remainder}</p>`;
+    let html = `<h4>${t('analysis.analysisForSingle', {n: pileSize, m: maxTake})}</h4>`;
+    html += `<p><strong>${t('analysis.keyNumber')}</strong> k + 1 = ${maxTake} + 1 = ${modulus}</p>`;
+    html += `<p><strong>${t('analysis.calculation')}</strong> ${pileSize} mod ${modulus} = ${remainder}</p>`;
     
     if (lastWins) {
-        html += `<h4>Rule: Last matchstick WINS</h4>`;
+        html += `<h4>${t('analysis.lastWins')}</h4>`;
         if (remainder === 0) {
             html += `<p class="strategy-result" style="color: var(--danger);">
-                <strong>First player is in a LOSING position!</strong><br>
-                ${pileSize} is a multiple of ${modulus}. No matter what you take, 
-                the opponent can always respond to leave you with another multiple of ${modulus}.
+                <strong>${t('analysis.losingFirst')}</strong><br>
+                ${t('analysis.opponentMirror', {mod: modulus})}
             </p>`;
         } else {
             html += `<p class="strategy-result" style="color: var(--secondary);">
-                <strong>First player can GUARANTEE a WIN!</strong><br>
-                Take ${remainder} matchsticks to leave ${pileSize - remainder} (a multiple of ${modulus}).<br>
-                Then always respond to leave multiples of ${modulus}.
+                <strong>${t('analysis.winningFirst')}</strong><br>
+                ${t('analysis.takeToWin', {n: remainder, remaining: pileSize - remainder, mod: modulus})}<br>
+                ${t('analysis.thenMirror', {mod: modulus})}
             </p>`;
         }
         
-        html += `<h4>Losing positions (multiples of ${modulus}):</h4>`;
+        html += `<h4>${t('analysis.losingPositions', {mod: modulus})}</h4>`;
         html += `<p>`;
         for (let i = 0; i <= Math.min(pileSize + modulus, 50); i += modulus) {
             html += `<span style="background: #fee2e2; padding: 5px 10px; margin: 3px; display: inline-block; border-radius: 5px;">${i}</span>`;
         }
         html += `</p>`;
     } else {
-        html += `<h4>Rule: Last matchstick LOSES</h4>`;
+        html += `<h4>${t('analysis.lastLoses')}</h4>`;
         const adjustedRemainder = (pileSize - 1) % modulus;
         if (adjustedRemainder === 0) {
             html += `<p class="strategy-result" style="color: var(--danger);">
-                <strong>First player is in a LOSING position!</strong><br>
-                The opponent can always force you to take the last matchstick.
+                <strong>${t('analysis.losingFirst')}</strong><br>
+                ${t('analysis.mirrorForce')}
             </p>`;
         } else {
             html += `<p class="strategy-result" style="color: var(--secondary);">
-                <strong>First player can GUARANTEE a WIN!</strong><br>
-                Take ${adjustedRemainder} matchsticks. Then mirror opponent's moves 
-                to leave them with 1 matchstick at the end.
+                <strong>${t('analysis.winningFirst')}</strong><br>
+                ${t('analysis.mirrorResponse', {n: adjustedRemainder})}
             </p>`;
         }
     }
@@ -296,7 +300,6 @@ function updateTwoPilesDisplay() {
         return;
     }
     
-    // Check game over
     if (twoPilesState.piles[0] === 0 && twoPilesState.piles[1] === 0) {
         twoPilesState.gameOver = true;
         const playerWins = !twoPilesState.playerTurn;
@@ -305,18 +308,17 @@ function updateTwoPilesDisplay() {
     }
     
     if (twoPilesState.playerTurn) {
-        document.getElementById('two-turn-text').textContent = 'Your Turn - Click a pile';
+        document.getElementById('two-turn-text').textContent = t('two.yourTurn');
         document.getElementById('two-status').textContent = nimSum === 0 ? 
-            'You are in a losing position...' : 
-            'You can win! Find the right move.';
+            t('two.losingPos') : 
+            t('two.winningPos');
     } else {
-        document.getElementById('two-turn-text').textContent = "Computer's Turn";
-        document.getElementById('two-status').textContent = 'Thinking...';
+        document.getElementById('two-turn-text').textContent = t('two.computerTurn');
+        document.getElementById('two-status').textContent = t('single.thinking');
         document.getElementById('two-pile-select').classList.add('hidden');
         setTimeout(computerTwoPilesMove, 1000);
     }
     
-    // Update pile selection visuals
     document.querySelectorAll('#two-piles-game .pile-container').forEach((el, i) => {
         el.classList.toggle('selected', i === twoPilesState.selectedPile);
     });
@@ -340,7 +342,7 @@ function makeTwoPilesMove() {
     const amount = parseInt(document.getElementById('two-take-amount').value);
     
     if (amount < 1 || amount > twoPilesState.piles[pile]) {
-        alert('Invalid amount!');
+        alert(currentLang === 'zh-TW' ? '\u7121\u6548\u7684\u6578\u91CF\uFF01' : 'Invalid amount!');
         return;
     }
     
@@ -348,7 +350,6 @@ function makeTwoPilesMove() {
     twoPilesState.selectedPile = -1;
     document.getElementById('two-pile-select').classList.add('hidden');
     
-    // Check game over
     if (twoPilesState.piles[0] === 0 && twoPilesState.piles[1] === 0) {
         twoPilesState.gameOver = true;
         showTwoPilesGameOver(true);
@@ -363,14 +364,12 @@ function computerTwoPilesMove() {
     let pile, take;
     
     if (nimSum === 0) {
-        // Losing position, make random move
         const nonEmptyPiles = twoPilesState.piles.map((p, i) => ({pile: i, count: p}))
             .filter(p => p.count > 0);
         const chosen = nonEmptyPiles[Math.floor(Math.random() * nonEmptyPiles.length)];
         pile = chosen.pile;
         take = Math.floor(Math.random() * chosen.count) + 1;
     } else {
-        // Winning position, find optimal move
         for (let i = 0; i < twoPilesState.piles.length; i++) {
             const newValue = twoPilesState.piles[i] ^ nimSum;
             if (newValue < twoPilesState.piles[i]) {
@@ -382,9 +381,8 @@ function computerTwoPilesMove() {
     }
     
     twoPilesState.piles[pile] -= take;
-    document.getElementById('two-status').textContent = `Computer took ${take} from Pile ${pile + 1}`;
+    document.getElementById('two-status').textContent = t('two.computerTook', {n: take, p: pile + 1});
     
-    // Check game over
     if (twoPilesState.piles[0] === 0 && twoPilesState.piles[1] === 0) {
         twoPilesState.gameOver = true;
         setTimeout(() => showTwoPilesGameOver(false), 500);
@@ -397,10 +395,10 @@ function computerTwoPilesMove() {
 function showTwoPilesGameOver(playerWins) {
     document.getElementById('two-status').innerHTML = `
         <div class="game-over ${playerWins ? '' : 'lost'}">
-            <h3 class="${playerWins ? 'winner' : 'loser'}">${playerWins ? 'You Win!' : 'You Lose!'}</h3>
-            <p>${playerWins ? 'Excellent use of Nim Sum strategy!' : 'Study the XOR strategy and try again!'}</p>
-            <button class="btn" onclick="startTwoPilesGame()">Play Again</button>
-            <button class="btn secondary" onclick="showTwoPilesStrategy()">Learn Strategy</button>
+            <h3 class="${playerWins ? 'winner' : 'loser'}">${playerWins ? t('game.youWin') : t('game.youLose')}</h3>
+            <p>${playerWins ? t('game.winMsgXor') : t('game.loseMsgXor')}</p>
+            <button class="btn" onclick="startTwoPilesGame()">${t('game.playAgain')}</button>
+            <button class="btn secondary" onclick="showTwoPilesStrategy()">${t('game.learnStrategy')}</button>
         </div>
     `;
 }
@@ -415,39 +413,38 @@ function showTwoPilesStrategy() {
     const nimSum = pile1 ^ pile2;
     const maxBits = Math.max(pile1.toString(2).length, pile2.toString(2).length, nimSum.toString(2).length);
     
-    let html = `<h4>Analysis for Piles: ${pile1} and ${pile2}</h4>`;
+    let html = `<h4>${t('analysis.analysisForTwo', {p1: pile1, p2: pile2})}</h4>`;
     html += `<div class="nim-sum-breakdown">`;
-    html += `Pile 1: ${pile1.toString().padStart(3)} = ${toBinary(pile1, maxBits)}\n`;
-    html += `Pile 2: ${pile2.toString().padStart(3)} = ${toBinary(pile2, maxBits)}\n`;
+    html += `${pileLabel(0)}: ${pile1.toString().padStart(3)} = ${toBinary(pile1, maxBits)}\n`;
+    html += `${pileLabel(1)}: ${pile2.toString().padStart(3)} = ${toBinary(pile2, maxBits)}\n`;
     html += `${'─'.repeat(maxBits + 12)}\n`;
     html += `Nim Sum: ${nimSum.toString().padStart(3)} = ${toBinary(nimSum, maxBits)}`;
     html += `</div>`;
     
     if (nimSum === 0) {
         html += `<p style="color: var(--danger); font-weight: bold;">
-            First player is in a LOSING position!<br>
-            Both piles are equal, so any move you make will give your opponent a winning Nim Sum.
+            ${t('analysis.losingFirst')}<br>
+            ${t('analysis.equalPiles')}
         </p>`;
     } else {
         html += `<p style="color: var(--secondary); font-weight: bold;">
-            First player can GUARANTEE a WIN!
+            ${t('analysis.winningFirst')}
         </p>`;
         
-        // Find the winning move
         for (let i = 0; i < 2; i++) {
             const pileVal = i === 0 ? pile1 : pile2;
             const newValue = pileVal ^ nimSum;
             if (newValue < pileVal) {
                 const take = pileVal - newValue;
-                html += `<p><strong>Winning Move:</strong> Take ${take} from Pile ${i + 1}</p>`;
-                html += `<p>This leaves Pile ${i + 1} at ${newValue}, making both piles equal (or Nim Sum = 0).</p>`;
+                html += `<p><strong>${t('analysis.winningMove')}</strong> ${t('analysis.takePile', {n: take, p: i + 1})}</p>`;
+                html += `<p>${t('analysis.leavePile', {p: i + 1, v: newValue})}</p>`;
                 html += `<div class="nim-sum-breakdown">`;
-                html += `After move:\n`;
+                html += `${t('analysis.afterMove')}\n`;
                 const newPiles = i === 0 ? [newValue, pile2] : [pile1, newValue];
-                html += `Pile 1: ${newPiles[0].toString().padStart(3)} = ${toBinary(newPiles[0], maxBits)}\n`;
-                html += `Pile 2: ${newPiles[1].toString().padStart(3)} = ${toBinary(newPiles[1], maxBits)}\n`;
+                html += `${pileLabel(0)}: ${newPiles[0].toString().padStart(3)} = ${toBinary(newPiles[0], maxBits)}\n`;
+                html += `${pileLabel(1)}: ${newPiles[1].toString().padStart(3)} = ${toBinary(newPiles[1], maxBits)}\n`;
                 html += `${'─'.repeat(maxBits + 12)}\n`;
-                html += `Nim Sum: ${(newPiles[0] ^ newPiles[1]).toString().padStart(3)} = ${toBinary(newPiles[0] ^ newPiles[1], maxBits)}`;
+                html += `Nim Sum: ${(newPiles[0] ^ newPiles[1]).toString().padStart(3)} = ${toBinary(newPiles[0] ^ newPiles[1], maxBits)} ${t('analysis.nimSumZero')}`;
                 html += `</div>`;
                 break;
             }
@@ -478,7 +475,7 @@ function updatePileInputs() {
         const div = document.createElement('div');
         div.className = 'setting';
         div.innerHTML = `
-            <label>Pile ${i + 1}:</label>
+            <label>${pileLabel(i)}:</label>
             <input type="number" class="multi-pile-input" value="${defaultValues[i] || Math.floor(Math.random() * 10) + 1}" min="1" max="50">
         `;
         container.appendChild(div);
@@ -519,19 +516,17 @@ function updateMultiPilesDisplay() {
         pileDiv.className = `pile-container${i === multiPilesState.selectedPile ? ' selected' : ''}`;
         pileDiv.onclick = () => selectMultiPile(i);
         pileDiv.innerHTML = `
-            <h4>Pile ${i + 1}</h4>
+            <h4>${pileLabel(i)}</h4>
             <div class="pile" id="multi-pile-${i}"></div>
             <p class="pile-count">${count}</p>
         `;
         container.appendChild(pileDiv);
     });
     
-    // Render matchsticks
     multiPilesState.piles.forEach((count, i) => {
         renderMatchsticks(document.getElementById(`multi-pile-${i}`), count);
     });
     
-    // Show Nim Sum breakdown
     const nimSumDisplay = document.getElementById('multi-nim-sum-display');
     nimSumDisplay.innerHTML = showNimSumBreakdown(multiPilesState.piles);
     
@@ -539,7 +534,6 @@ function updateMultiPilesDisplay() {
         return;
     }
     
-    // Check game over
     const totalRemaining = multiPilesState.piles.reduce((a, b) => a + b, 0);
     if (totalRemaining === 0) {
         multiPilesState.gameOver = true;
@@ -551,13 +545,13 @@ function updateMultiPilesDisplay() {
     const nimSum = calculateNimSumFromArray(multiPilesState.piles);
     
     if (multiPilesState.playerTurn) {
-        document.getElementById('multi-turn-text').textContent = 'Your Turn - Click a pile';
+        document.getElementById('multi-turn-text').textContent = t('multi.yourTurn');
         document.getElementById('multi-status').textContent = nimSum === 0 ? 
-            'You are in a losing position...' : 
-            'You can win! Use the Nim Sum to find the optimal move.';
+            t('multi.losingPos') : 
+            t('multi.winningPos');
     } else {
-        document.getElementById('multi-turn-text').textContent = "Computer's Turn";
-        document.getElementById('multi-status').textContent = 'Thinking...';
+        document.getElementById('multi-turn-text').textContent = t('multi.computerTurn');
+        document.getElementById('multi-status').textContent = t('single.thinking');
         document.getElementById('multi-pile-select').classList.add('hidden');
         setTimeout(computerMultiPilesMove, 1000);
     }
@@ -581,7 +575,7 @@ function makeMultiPilesMove() {
     const amount = parseInt(document.getElementById('multi-take-amount').value);
     
     if (amount < 1 || amount > multiPilesState.piles[pile]) {
-        alert('Invalid amount!');
+        alert(currentLang === 'zh-TW' ? '\u7121\u6548\u7684\u6578\u91CF\uFF01' : 'Invalid amount!');
         return;
     }
     
@@ -589,7 +583,6 @@ function makeMultiPilesMove() {
     multiPilesState.selectedPile = -1;
     document.getElementById('multi-pile-select').classList.add('hidden');
     
-    // Check game over
     const totalRemaining = multiPilesState.piles.reduce((a, b) => a + b, 0);
     if (totalRemaining === 0) {
         multiPilesState.gameOver = true;
@@ -605,14 +598,12 @@ function computerMultiPilesMove() {
     let pile, take;
     
     if (nimSum === 0) {
-        // Losing position, make random move
         const nonEmptyPiles = multiPilesState.piles.map((p, i) => ({pile: i, count: p}))
             .filter(p => p.count > 0);
         const chosen = nonEmptyPiles[Math.floor(Math.random() * nonEmptyPiles.length)];
         pile = chosen.pile;
         take = Math.floor(Math.random() * chosen.count) + 1;
     } else {
-        // Winning position, find optimal move
         for (let i = 0; i < multiPilesState.piles.length; i++) {
             const newValue = multiPilesState.piles[i] ^ nimSum;
             if (newValue < multiPilesState.piles[i]) {
@@ -624,9 +615,8 @@ function computerMultiPilesMove() {
     }
     
     multiPilesState.piles[pile] -= take;
-    document.getElementById('multi-status').textContent = `Computer took ${take} from Pile ${pile + 1}`;
+    document.getElementById('multi-status').textContent = t('multi.computerTook', {n: take, p: pile + 1});
     
-    // Check game over
     const totalRemaining = multiPilesState.piles.reduce((a, b) => a + b, 0);
     if (totalRemaining === 0) {
         multiPilesState.gameOver = true;
@@ -640,10 +630,10 @@ function computerMultiPilesMove() {
 function showMultiPilesGameOver(playerWins) {
     document.getElementById('multi-status').innerHTML = `
         <div class="game-over ${playerWins ? '' : 'lost'}">
-            <h3 class="${playerWins ? 'winner' : 'loser'}">${playerWins ? 'You Win!' : 'You Lose!'}</h3>
-            <p>${playerWins ? 'You have mastered the Nim Sum strategy!' : 'Review the XOR calculations and try again!'}</p>
-            <button class="btn" onclick="startMultiPilesGame()">Play Again</button>
-            <button class="btn secondary" onclick="showMultiPilesStrategy()">Learn Strategy</button>
+            <h3 class="${playerWins ? 'winner' : 'loser'}">${playerWins ? t('game.youWin') : t('game.youLose')}</h3>
+            <p>${playerWins ? t('game.winMsgMaster') : t('game.loseMsgMaster')}</p>
+            <button class="btn" onclick="startMultiPilesGame()">${t('game.playAgain')}</button>
+            <button class="btn secondary" onclick="showMultiPilesStrategy()">${t('game.learnStrategy')}</button>
         </div>
     `;
 }
@@ -658,10 +648,10 @@ function showMultiPilesStrategy() {
     const nimSum = calculateNimSumFromArray(piles);
     const maxBits = Math.max(...piles.map(p => p.toString(2).length), nimSum.toString(2).length);
     
-    let html = `<h4>Analysis for ${piles.length} Piles: ${piles.join(', ')}</h4>`;
+    let html = `<h4>${t('analysis.analysisFor', {n: piles.length})} ${piles.join(', ')}</h4>`;
     html += `<div class="nim-sum-breakdown">`;
     piles.forEach((pile, i) => {
-        html += `Pile ${i + 1}: ${pile.toString().padStart(3)} = ${toBinary(pile, maxBits)}\n`;
+        html += `${pileLabel(i)}: ${pile.toString().padStart(3)} = ${toBinary(pile, maxBits)}\n`;
     });
     html += `${'─'.repeat(maxBits + 12)}\n`;
     html += `Nim Sum: ${nimSum.toString().padStart(3)} = ${toBinary(nimSum, maxBits)}`;
@@ -669,42 +659,40 @@ function showMultiPilesStrategy() {
     
     if (nimSum === 0) {
         html += `<p style="color: var(--danger); font-weight: bold;">
-            First player is in a LOSING position!<br>
-            Any move you make will create a non-zero Nim Sum, giving your opponent the advantage.
+            ${t('analysis.losingFirst')}<br>
+            ${t('analysis.anyMove')}
         </p>`;
     } else {
         html += `<p style="color: var(--secondary); font-weight: bold;">
-            First player can GUARANTEE a WIN!
+            ${t('analysis.winningFirst')}
         </p>`;
         
-        // Find all winning moves
-        html += `<h4>Winning Moves:</h4>`;
+        html += `<h4>${t('analysis.winningMoves')}</h4>`;
         let foundMove = false;
         
         for (let i = 0; i < piles.length; i++) {
             const newValue = piles[i] ^ nimSum;
             if (newValue < piles[i]) {
                 const take = piles[i] - newValue;
-                html += `<p><strong>Option ${i + 1}:</strong> Take ${take} from Pile ${i + 1} (leave ${newValue})</p>`;
+                html += `<p><strong>${t('analysis.option', {n: i + 1})}</strong> ${t('analysis.takeFrom', {n: take, p: i + 1, v: newValue})}</p>`;
                 foundMove = true;
             }
         }
         
         if (foundMove) {
-            // Show result of first winning move
             for (let i = 0; i < piles.length; i++) {
                 const newValue = piles[i] ^ nimSum;
                 if (newValue < piles[i]) {
                     const newPiles = [...piles];
                     newPiles[i] = newValue;
                     html += `<div class="nim-sum-breakdown">`;
-                    html += `After taking from Pile ${i + 1}:\n`;
+                    html += `${t('analysis.afterTaking', {p: i + 1})}\n`;
                     newPiles.forEach((pile, j) => {
-                        html += `Pile ${j + 1}: ${pile.toString().padStart(3)} = ${toBinary(pile, maxBits)}\n`;
+                        html += `${pileLabel(j)}: ${pile.toString().padStart(3)} = ${toBinary(pile, maxBits)}\n`;
                     });
                     html += `${'─'.repeat(maxBits + 12)}\n`;
                     const newNimSum = calculateNimSumFromArray(newPiles);
-                    html += `Nim Sum: ${newNimSum.toString().padStart(3)} = ${toBinary(newNimSum, maxBits)} (Zero!)`;
+                    html += `Nim Sum: ${newNimSum.toString().padStart(3)} = ${toBinary(newNimSum, maxBits)} ${t('analysis.nimSumZero')}`;
                     html += `</div>`;
                     break;
                 }
@@ -727,7 +715,7 @@ function calculateNimSum() {
         const piles = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n >= 0);
         
         if (piles.length === 0) {
-            resultDiv.textContent = 'Please enter valid pile sizes (comma-separated numbers)';
+            resultDiv.textContent = t('analysis.calcError');
             return;
         }
         
@@ -736,28 +724,28 @@ function calculateNimSum() {
         
         let result = '';
         piles.forEach((pile, i) => {
-            result += `Pile ${i + 1}: ${pile.toString().padStart(3)} = ${toBinary(pile, maxBits)}\n`;
+            result += `${pileLabel(i)}: ${pile.toString().padStart(3)} = ${toBinary(pile, maxBits)}\n`;
         });
         result += `${'─'.repeat(maxBits + 12)}\n`;
         result += `Nim Sum: ${nimSum.toString().padStart(3)} = ${toBinary(nimSum, maxBits)}\n\n`;
         
         if (nimSum === 0) {
-            result += `Position: LOSING (for first player)\n`;
-            result += `Any move will give opponent a winning position.`;
+            result += `${t('analysis.position')} ${t('analysis.losingFirstPlayer')}\n`;
+            result += t('analysis.anyMoveGives');
         } else {
-            result += `Position: WINNING (for first player)\n`;
-            result += `\nWinning moves:\n`;
+            result += `${t('analysis.position')} ${t('analysis.winningFirstPlayer')}\n`;
+            result += `\n${t('analysis.winningMoves')}\n`;
             for (let i = 0; i < piles.length; i++) {
                 const newValue = piles[i] ^ nimSum;
                 if (newValue < piles[i]) {
-                    result += `- Take ${piles[i] - newValue} from Pile ${i + 1} (leave ${newValue})\n`;
+                    result += `- ${t('analysis.takeFrom', {n: piles[i] - newValue, p: i + 1, v: newValue})}\n`;
                 }
             }
         }
         
         resultDiv.textContent = result;
     } catch (e) {
-        resultDiv.textContent = 'Error: Please enter valid numbers separated by commas';
+        resultDiv.textContent = t('analysis.calcInputError');
     }
 }
 
@@ -765,76 +753,16 @@ function calculateNimSum() {
 // Practice Problems
 // ============================================
 const problems = [
-    {
-        difficulty: 'Easy',
-        text: 'There are 12 matchsticks in a pile. Two players take turns removing 1, 2, or 3 matchsticks. The player who takes the last matchstick wins. If you go first, how many matchsticks should you take to guarantee a win? (Enter 0 if first player cannot guarantee a win)',
-        answer: 0,
-        hint: 'Think about what position you want to leave for your opponent. What number should remain after your move?',
-        solution: 'With max take = 3, the key is multiples of 4 (k+1=4). Since 12 is a multiple of 4, the first player is in a LOSING position. Answer: 0'
-    },
-    {
-        difficulty: 'Easy',
-        text: 'There are 13 matchsticks in a pile. Two players take turns removing 1, 2, or 3 matchsticks. The player who takes the last matchstick wins. How many should the first player take?',
-        answer: 1,
-        hint: 'You want to leave a multiple of 4 for your opponent.',
-        solution: '13 mod 4 = 1. Take 1 to leave 12 (a multiple of 4). Your opponent will always leave you with a non-multiple of 4.'
-    },
-    {
-        difficulty: 'Medium',
-        text: 'There are two piles with 22 and 36 matchsticks. Players take turns removing any number from ONE pile. The player who takes the last matchstick wins. If you go first, how many should you take from which pile? (Enter the number you should take)',
-        answer: 14,
-        hint: 'Calculate 22 XOR 36. Then find which pile to reduce to make Nim Sum = 0.',
-        solution: '22 XOR 36 = 50. Check: 36 XOR 50 = 22 < 36. So take 36-22 = 14 from pile of 36, leaving both piles at 22.'
-    },
-    {
-        difficulty: 'Medium',
-        text: 'There are two piles with 15 and 15 matchsticks. The player who takes the last matchstick wins. If you go first, how many should you take? (Enter 0 if you cannot win)',
-        answer: 0,
-        hint: 'What is 15 XOR 15?',
-        solution: '15 XOR 15 = 0. When piles are equal, Nim Sum is 0. First player is in a LOSING position. Answer: 0'
-    },
-    {
-        difficulty: 'Medium',
-        text: 'Piles: 5 and 8. What is the Nim Sum?',
-        answer: 13,
-        hint: '5 in binary is 0101, 8 in binary is 1000.',
-        solution: '5 = 0101, 8 = 1000. XOR = 1101 = 13.'
-    },
-    {
-        difficulty: 'Hard',
-        text: 'Three piles: 3, 5, 7. The first player wants to win. From which pile should they take, and how many? (Enter the number to take)',
-        answer: 1,
-        hint: 'Calculate 3 XOR 5 XOR 7 first.',
-        solution: '3 XOR 5 XOR 7 = 1. Check each pile: 3 XOR 1 = 2 < 3. Take 1 from pile of 3, leaving piles 2, 5, 7 with Nim Sum = 0.'
-    },
-    {
-        difficulty: 'Hard',
-        text: 'Three piles: 4, 5, 6. What is the Nim Sum?',
-        answer: 7,
-        hint: 'Calculate step by step: first 4 XOR 5, then result XOR 6.',
-        solution: '4 = 100, 5 = 101, 6 = 110. 4 XOR 5 = 001 = 1. 1 XOR 6 = 111 = 7.'
-    },
-    {
-        difficulty: 'Hard',
-        text: 'Four piles: 1, 3, 5, 7. Is the first player in a winning or losing position? (Enter 1 for winning, 0 for losing)',
-        answer: 0,
-        hint: 'Calculate XOR of all four numbers.',
-        solution: '1 XOR 3 XOR 5 XOR 7 = 0. This is a famous Nim position where first player LOSES! Answer: 0'
-    },
-    {
-        difficulty: 'Hard',
-        text: 'Two piles with 10 and 26. To guarantee a win, how many matchsticks should the first player take?',
-        answer: 6,
-        hint: '10 XOR 26 = ?. Then find which pile to reduce.',
-        solution: '10 = 01010, 26 = 11010. XOR = 10000 = 16. Check: 26 XOR 16 = 10, and 10 < 26. Take 26-10 = 16? Wait, let me recalculate. 10 XOR 16 = 26 (not less). 26 XOR 16 = 10 < 26. Take 16 from pile 26, but check: we need to leave pile at 26 XOR 16 = 10. Take 26 - 10 = 16. Hmm, let me verify: Actually 10 XOR 26 = 16. To make Nim Sum 0, reduce 26 to 26 XOR 16 = 10, so take 16. But wait - let me check the other pile: 10 XOR 16 = 26, not less than 10. So the answer is take 16 from the pile of 26. Let me recalculate from scratch: 10 binary = 01010, 26 binary = 11010. XOR = 10000 = 16. For pile 10: 10 XOR 16 = 26 > 10, cannot use. For pile 26: 26 XOR 16 = 10 < 26, yes! Take 26-10=16. Hmm the expected answer says 6, let me re-verify... Actually I realize I may have made an error in the problem setup. Let me adjust.'
-    },
-    {
-        difficulty: 'Easy',
-        text: '15 matchsticks, max take 4 per turn, last takes wins. How many should first player take?',
-        answer: 0,
-        hint: 'k+1 = 5. Is 15 a multiple of 5?',
-        solution: '15 is a multiple of 5 (k+1). First player is in a LOSING position. Answer: 0'
-    }
+    { difficulty: 'Easy', answer: 0 },
+    { difficulty: 'Easy', answer: 1 },
+    { difficulty: 'Medium', answer: 14 },
+    { difficulty: 'Medium', answer: 0 },
+    { difficulty: 'Medium', answer: 13 },
+    { difficulty: 'Hard', answer: 1 },
+    { difficulty: 'Hard', answer: 7 },
+    { difficulty: 'Hard', answer: 0 },
+    { difficulty: 'Hard', answer: 6 },
+    { difficulty: 'Easy', answer: 0 }
 ];
 
 let currentProblem = 0;
@@ -843,12 +771,14 @@ let totalAttempted = 0;
 
 function loadProblem(index) {
     currentProblem = index;
-    const problem = problems[index];
+    const problemData = problems[index];
+    const translatedProblems = t('practice.problems');
+    const tp = (translatedProblems && Array.isArray(translatedProblems)) ? translatedProblems[index] : null;
     
     document.getElementById('problem-num').textContent = index + 1;
-    document.getElementById('problem-difficulty').textContent = problem.difficulty;
-    document.getElementById('problem-difficulty').className = `problem-difficulty ${problem.difficulty}`;
-    document.getElementById('problem-text').textContent = problem.text;
+    document.getElementById('problem-difficulty').textContent = problemData.difficulty;
+    document.getElementById('problem-difficulty').className = `problem-difficulty ${problemData.difficulty}`;
+    document.getElementById('problem-text').textContent = tp ? tp.text : '';
     document.getElementById('user-answer').value = '';
     document.getElementById('feedback').classList.add('hidden');
     document.getElementById('hint-box').classList.add('hidden');
@@ -864,10 +794,10 @@ function checkAnswer() {
     
     if (userAnswer === problem.answer) {
         score++;
-        feedback.textContent = 'Correct! Well done!';
+        feedback.textContent = t('practice.correct');
         feedback.className = 'feedback correct';
     } else {
-        feedback.textContent = `Incorrect. The answer is ${problem.answer}.`;
+        feedback.textContent = t('practice.incorrect', {answer: problem.answer});
         feedback.className = 'feedback incorrect';
     }
     
@@ -876,16 +806,18 @@ function checkAnswer() {
 }
 
 function showHint() {
-    const problem = problems[currentProblem];
+    const translatedProblems = t('practice.problems');
+    const tp = (translatedProblems && Array.isArray(translatedProblems)) ? translatedProblems[currentProblem] : null;
     const hintBox = document.getElementById('hint-box');
-    hintBox.textContent = problem.hint;
+    hintBox.textContent = tp ? tp.hint : '';
     hintBox.classList.remove('hidden');
 }
 
 function showSolution() {
-    const problem = problems[currentProblem];
+    const translatedProblems = t('practice.problems');
+    const tp = (translatedProblems && Array.isArray(translatedProblems)) ? translatedProblems[currentProblem] : null;
     const solutionBox = document.getElementById('solution-box');
-    solutionBox.textContent = problem.solution;
+    solutionBox.textContent = tp ? tp.solution : '';
     solutionBox.classList.remove('hidden');
 }
 
@@ -910,8 +842,402 @@ function updateScore() {
     document.getElementById('total-attempted').textContent = totalAttempted;
 }
 
+// ============================================
+// Theory Section - Dynamic Rendering
+// ============================================
+function renderTheorySection() {
+    const container = document.getElementById('theory-content');
+    if (!container) return;
+    
+    const isCN = currentLang === 'zh-TW';
+    const inBinary = isCN ? '\u4E8C\u9032\u4F4D' : 'in binary';
+    const xorResult = isCN ? 'XOR \u7D50\u679C' : 'XOR result';
+    const colByCol = isCN ? '\u9010\u5217\u5206\u6790' : 'Column by column';
+    const colOf = isCN ? '\u7684\u5217' : "'s column";
+    const even1s = isCN ? '\u5076\u6578\u500B 1' : 'even 1s';
+    const odd1s = isCN ? '\u5947\u6578\u500B 1' : 'odd 1s';
+    const checkPile = isCN ? '\u6AA2\u67E5\u5806' : 'Check pile';
+    const notLess = isCN ? '\u4E0D\u5C0F\u65BC' : 'NOT less than';
+    const cantUse = isCN ? '\u4E0D\u53EF\u7528' : "can't use";
+    const yesText = isCN ? '\u53EF\u4EE5\uFF01' : 'YES!';
+    const solutionLabel = isCN ? '\u89E3\u6CD5' : 'Solution';
+    const takeLabel = isCN ? '\u5F9E 36 \u7684\u5806\u4E2D\u53D6\u8D70 14 \u6839' : 'Take 14 from pile of 36';
+    const resultLabel = isCN ? '\u7D50\u679C\uFF1A\u5169\u5806\u90FD\u662F 22\uFF0CNim Sum = 0' : 'Result: Both piles at 22, Nim Sum = 0';
+    
+    container.innerHTML = `
+        <div class="theory-card">
+            <h3>${t('theory.whatIsNim')}</h3>
+            <p>${t('theory.whatIsNimDesc')}</p>
+        </div>
+
+        <div class="theory-card">
+            <h3>${t('theory.binaryTitle')}</h3>
+            <p>${t('theory.binaryIntro')}</p>
+            
+            <div class="example-box">
+                <h4>${t('theory.whatIsBinary')}</h4>
+                <p>${t('theory.binaryDesc1')}</p>
+                <p>${t('theory.binaryDesc2')}</p>
+            </div>
+
+            <div class="example-box">
+                <h4>${t('theory.method421')}</h4>
+                <p>${t('theory.method421Desc')}</p>
+                <table class="binary-table">
+                    <tr>
+                        <th>${t('theory.position')}</th>
+                        <th>...</th>
+                        <th>16</th>
+                        <th>8</th>
+                        <th>4</th>
+                        <th>2</th>
+                        <th>1</th>
+                    </tr>
+                    <tr>
+                        <td>${t('theory.powerOf2')}</td>
+                        <td>...</td>
+                        <td>2<sup>4</sup></td>
+                        <td>2<sup>3</sup></td>
+                        <td>2<sup>2</sup></td>
+                        <td>2<sup>1</sup></td>
+                        <td>2<sup>0</sup></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 15px;">${t('theory.convertTip')}</p>
+                <ul>
+                    <li>${t('theory.ifYes')}</li>
+                    <li>${t('theory.ifNo')}</li>
+                </ul>
+            </div>
+
+            <div class="example-box">
+                <h4>${t('theory.example3')}</h4>
+                <p>${t('theory.example3Intro')}</p>
+                <ul>
+                    <li>${t('theory.example3Step1')}</li>
+                    <li>${t('theory.example3Step2')}</li>
+                    <li>${t('theory.example3Step3')}</li>
+                </ul>
+                <p>${t('theory.example3Result')}</p>
+            </div>
+
+            <div class="example-box">
+                <h4>${t('theory.example5')}</h4>
+                <p>${t('theory.example5Intro')}</p>
+                <ul>
+                    <li>${t('theory.example5Step1')}</li>
+                    <li>${t('theory.example5Step2')}</li>
+                    <li>${t('theory.example5Step3')}</li>
+                </ul>
+                <p>${t('theory.example5Result')}</p>
+            </div>
+
+            <div class="example-box">
+                <h4>${t('theory.example7')}</h4>
+                <p>${t('theory.example7Intro')}</p>
+                <ul>
+                    <li>${t('theory.example7Step1')}</li>
+                    <li>${t('theory.example7Step2')}</li>
+                    <li>${t('theory.example7Step3')}</li>
+                </ul>
+                <p>${t('theory.example7Result')}</p>
+            </div>
+        </div>
+
+        <div class="theory-card">
+            <h3>${t('theory.xorTitle')}</h3>
+            <p>${t('theory.xorIntro')}</p>
+            <div class="xor-explanation">
+                <p><strong>${t('theory.xorRule')}</strong></p>
+            </div>
+            
+            <div class="example-box">
+                <h4>${t('theory.xorTable')}</h4>
+                <table class="xor-table">
+                    <tr><th>A</th><th>B</th><th>A XOR B</th><th>${t('theory.why')}</th></tr>
+                    <tr><td>0</td><td>0</td><td>0</td><td>${t('theory.same')}</td></tr>
+                    <tr><td>0</td><td>1</td><td>1</td><td>${t('theory.different')}</td></tr>
+                    <tr><td>1</td><td>0</td><td>1</td><td>${t('theory.different')}</td></tr>
+                    <tr><td>1</td><td>1</td><td>0</td><td>${t('theory.same')}</td></tr>
+                </table>
+            </div>
+
+            <div class="example-box">
+                <h4>${t('theory.xorOddOut')}</h4>
+                <p>${t('theory.xorOddDesc')}</p>
+                <ul>
+                    <li>${t('theory.xorOdd1')}</li>
+                    <li>${t('theory.xorEven1')}</li>
+                </ul>
+                <p>${t('theory.xorCancel')}</p>
+            </div>
+        </div>
+
+        <div class="theory-card">
+            <h3>${t('theory.nimSumTitle')}</h3>
+            <p>${t('theory.nimSumDesc')}</p>
+
+            <div class="example-box">
+                <h4>${t('theory.example357')}</h4>
+                <pre>
+3 ${inBinary}:  011  (0\u00D74 + 1\u00D72 + 1\u00D71)
+5 ${inBinary}:  101  (1\u00D74 + 0\u00D72 + 1\u00D71)
+7 ${inBinary}:  111  (1\u00D74 + 1\u00D72 + 1\u00D71)
+              ---
+${xorResult}:   001 = 1 (Nim Sum)
+
+${colByCol}:
+- 4${colOf}: 0 XOR 1 XOR 1 = 0 (${even1s})
+- 2${colOf}: 1 XOR 0 XOR 1 = 0 (${even1s})
+- 1${colOf}: 1 XOR 1 XOR 1 = 1 (${odd1s})
+                </pre>
+                <p>${t('theory.example357Result')}</p>
+            </div>
+        </div>
+
+        <div class="theory-card highlight-card">
+            <h3>${t('theory.pairingTitle')}</h3>
+            <p>${t('theory.pairingIntro')}</p>
+            
+            <div class="example-box">
+                <h4>${t('theory.pairingStrategy')}</h4>
+                <p>${t('theory.pairingDesc')}</p>
+                <ul>
+                    <li>${t('theory.pairingEven')}</li>
+                    <li>${t('theory.pairingOdd')}</li>
+                </ul>
+                <p>${t('theory.pairingGoal')}</p>
+            </div>
+
+            <div class="example-box">
+                <h4>${t('theory.pairing357')}</h4>
+                <table class="pairing-table">
+                    <tr>
+                        <th>${t('theory.pairingPile')}</th>
+                        <th>${t('theory.pairingHas4')}</th>
+                        <th>${t('theory.pairingHas2')}</th>
+                        <th>${t('theory.pairingHas1')}</th>
+                    </tr>
+                    <tr>
+                        <td>3 = 2+1</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                    </tr>
+                    <tr>
+                        <td>5 = 4+1</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                    </tr>
+                    <tr>
+                        <td>7 = 4+2+1</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                    </tr>
+                    <tr class="count-row">
+                        <td><strong>${t('theory.pairingCount')}</strong></td>
+                        <td>2 (${t('theory.pairingEvenCount')})</td>
+                        <td>2 (${t('theory.pairingEvenCount')})</td>
+                        <td>3 (${t('theory.pairingOddCount')})</td>
+                    </tr>
+                </table>
+                <p style="margin-top: 15px;">${t('theory.pairing357Result')}</p>
+                <p>${t('theory.pairing357Win')}</p>
+            </div>
+
+            <div class="example-box">
+                <h4>${t('theory.pairing1357')}</h4>
+                <table class="pairing-table">
+                    <tr>
+                        <th>${t('theory.pairingPile')}</th>
+                        <th>${t('theory.pairingHas4')}</th>
+                        <th>${t('theory.pairingHas2')}</th>
+                        <th>${t('theory.pairingHas1')}</th>
+                    </tr>
+                    <tr>
+                        <td>1 = 1</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                    </tr>
+                    <tr>
+                        <td>3 = 2+1</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                    </tr>
+                    <tr>
+                        <td>5 = 4+1</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                    </tr>
+                    <tr>
+                        <td>7 = 4+2+1</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                    </tr>
+                    <tr class="count-row">
+                        <td><strong>${t('theory.pairingCount')}</strong></td>
+                        <td>2 (${t('theory.pairingEvenCount')})</td>
+                        <td>2 (${t('theory.pairingEvenCount')})</td>
+                        <td>4 (${t('theory.pairingEvenCount')})</td>
+                    </tr>
+                </table>
+                <p style="margin-top: 15px;">${t('theory.pairing1357Result')}</p>
+                <p>${t('theory.pairing1357Famous')}</p>
+            </div>
+        </div>
+
+        <div class="theory-card">
+            <h3>${t('theory.strategyTitle')}</h3>
+            <div class="strategy-rules">
+                <div class="rule">
+                    <span class="rule-num">1</span>
+                    <div>
+                        <strong>${t('theory.step1')}</strong>
+                        <p>${t('theory.step1Desc')}</p>
+                    </div>
+                </div>
+                <div class="rule">
+                    <span class="rule-num">2</span>
+                    <div>
+                        <strong>${t('theory.step2')}</strong>
+                        <p>${t('theory.step2Desc')}</p>
+                    </div>
+                </div>
+                <div class="rule">
+                    <span class="rule-num">3</span>
+                    <div>
+                        <strong>${t('theory.step3')}</strong>
+                        <p>${t('theory.step3Desc')}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="theory-card">
+            <h3>${t('theory.findingMove')}</h3>
+            <p>${t('theory.findingMoveDesc')}</p>
+            <ol>
+                <li>${t('theory.findStep1')}</li>
+                <li>${t('theory.findStep2')}</li>
+                <li>${t('theory.findStep3')}</li>
+            </ol>
+            
+            <div class="example-box">
+                <h4>${t('theory.example2236')}</h4>
+                <pre>
+22 ${inBinary}: 010110  (16+4+2 = 22)
+36 ${inBinary}: 100100  (32+4 = 36)
+              ------
+Nim Sum:      110010 = 50
+
+${checkPile} 22: 22 XOR 50 = 36 (${notLess} 22, ${cantUse})
+${checkPile} 36: 36 XOR 50 = 22 (22 < 36, ${yesText})
+
+${solutionLabel}: ${takeLabel} (36 - 22 = 14)
+${resultLabel}
+                </pre>
+            </div>
+
+            <div class="example-box">
+                <h4>${t('theory.pairing2236')}</h4>
+                <table class="pairing-table">
+                    <tr>
+                        <th>${t('theory.pairingPile')}</th>
+                        <th>32</th>
+                        <th>16</th>
+                        <th>8</th>
+                        <th>4</th>
+                        <th>2</th>
+                        <th>1</th>
+                    </tr>
+                    <tr>
+                        <td>22 = 16+4+2</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                    </tr>
+                    <tr>
+                        <td>36 = 32+4</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingYes')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                        <td>${t('theory.pairingNo')}</td>
+                    </tr>
+                    <tr class="count-row">
+                        <td><strong>${t('theory.pairingCount')}</strong></td>
+                        <td>1 (${t('theory.pairingOddCount')})</td>
+                        <td>1 (${t('theory.pairingOddCount')})</td>
+                        <td>0 (${t('theory.pairingEvenCount')})</td>
+                        <td>2 (${t('theory.pairingEvenCount')})</td>
+                        <td>1 (${t('theory.pairingOddCount')})</td>
+                        <td>0 (${t('theory.pairingEvenCount')})</td>
+                    </tr>
+                </table>
+                <p style="margin-top: 15px;">${t('theory.pairing2236Result')}</p>
+                <p>${t('theory.pairing2236Solution')}</p>
+            </div>
+        </div>
+
+        <div class="theory-card">
+            <h3>${t('theory.singlePileStrategy')}</h3>
+            <p>${t('theory.singlePileDesc')}</p>
+            <ul>
+                <li>${t('theory.winningPos')}</li>
+                <li>${t('theory.losingPos')}</li>
+            </ul>
+            <p>${t('theory.singlePileTip')}</p>
+            
+            <div class="example-box">
+                <h4>${t('theory.example12')}</h4>
+                <p>${t('theory.example12Desc1')}</p>
+                <p>${t('theory.example12Desc2')}</p>
+            </div>
+        </div>
+
+        <div class="theory-card">
+            <h3>${t('theory.whyWork')}</h3>
+            <p>${t('theory.whyWorkDesc')}</p>
+            <ul>
+                <li>${t('theory.whyWork1')}</li>
+                <li>${t('theory.whyWork2')}</li>
+                <li>${t('theory.whyWork3')}</li>
+            </ul>
+            <p>${t('theory.whyWorkTrap')}</p>
+            
+            <div class="example-box">
+                <h4>${t('theory.keyInsight')}</h4>
+                <p>${t('theory.keyInsightDesc')}</p>
+            </div>
+        </div>
+
+        <div class="interactive-calculator">
+            <h3>${t('theory.calculator')}</h3>
+            <div class="calculator-input">
+                <label>${t('theory.calcLabel')}</label>
+                <input type="text" id="calc-input" placeholder="${t('theory.calcPlaceholder')}">
+                <button class="btn" onclick="calculateNimSum()">${t('theory.calcBtn')}</button>
+            </div>
+            <div id="calc-result" class="calc-result"></div>
+        </div>
+    `;
+}
+
+// ============================================
 // Initialize
+// ============================================
 document.addEventListener('DOMContentLoaded', () => {
+    renderTheorySection();
     updatePileInputs();
     loadProblem(0);
 });
