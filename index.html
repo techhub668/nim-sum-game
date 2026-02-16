@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nim Sum Master - Combinatorial Game Theory</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Nim Sum Master</h1>
+            <p class="subtitle">Master Combinatorial Game Theory Through Play</p>
+        </header>
+
+        <nav class="main-nav">
+            <button class="nav-btn active" data-section="home">Home</button>
+            <button class="nav-btn" data-section="single-pile">1 Pile</button>
+            <button class="nav-btn" data-section="two-piles">2 Piles</button>
+            <button class="nav-btn" data-section="multi-piles">Multi-Piles</button>
+            <button class="nav-btn" data-section="theory">Learn Theory</button>
+            <button class="nav-btn" data-section="practice">Practice</button>
+        </nav>
+
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="welcome-card">
+                <h2>Welcome to Nim Sum Master!</h2>
+                <p>Learn the winning strategy for the classic Game of Nim - a fundamental concept in Combinatorial Game Theory often featured in Math Olympiad competitions.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">1</div>
+                        <h3>Single Pile</h3>
+                        <p>Start with basics - learn when you can guarantee a win with one pile of matchsticks.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">2</div>
+                        <h3>Two Piles</h3>
+                        <p>Master the strategy for two-pile games using the XOR principle.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">N</div>
+                        <h3>Multi-Piles</h3>
+                        <p>Apply Nim Sum theory to any number of piles and never lose again!</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">?</div>
+                        <h3>Learn Theory</h3>
+                        <p>Understand the mathematical theory behind the winning strategy.</p>
+                    </div>
+                </div>
+
+                <button class="start-btn" onclick="navigateTo('single-pile')">Start Learning!</button>
+            </div>
+        </section>
+
+        <!-- Single Pile Section -->
+        <section id="single-pile" class="section">
+            <h2>Single Pile Game</h2>
+            <div class="game-info">
+                <p><strong>Rules:</strong> Two players take turns removing 1 to <span id="max-take-display">3</span> matchsticks from a pile. The player who takes the last matchstick <span id="last-wins-text">wins</span>!</p>
+            </div>
+
+            <div class="settings-panel">
+                <div class="setting">
+                    <label>Pile Size:</label>
+                    <input type="number" id="single-pile-size" value="12" min="1" max="50">
+                </div>
+                <div class="setting">
+                    <label>Max Take Per Turn:</label>
+                    <input type="number" id="single-max-take" value="3" min="1" max="10">
+                </div>
+                <div class="setting">
+                    <label>Last Matchstick:</label>
+                    <select id="single-last-wins">
+                        <option value="true">Wins</option>
+                        <option value="false">Loses</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="startSinglePileGame()">Start Game</button>
+                <button class="btn secondary" onclick="showSinglePileStrategy()">Show Strategy</button>
+            </div>
+
+            <div id="single-pile-game" class="game-board hidden">
+                <div class="pile-container">
+                    <div class="pile" id="single-pile-display"></div>
+                    <p class="pile-count">Remaining: <span id="single-remaining">0</span></p>
+                </div>
+
+                <div class="turn-info">
+                    <p id="single-turn-text">Your Turn</p>
+                    <p id="single-status"></p>
+                </div>
+
+                <div class="action-buttons" id="single-actions"></div>
+            </div>
+
+            <div id="single-strategy" class="strategy-panel hidden">
+                <h3>Strategy Analysis</h3>
+                <div id="single-strategy-content"></div>
+            </div>
+        </section>
+
+        <!-- Two Piles Section -->
+        <section id="two-piles" class="section">
+            <h2>Two Piles Game</h2>
+            <div class="game-info">
+                <p><strong>Rules:</strong> Two players take turns removing any number of matchsticks from ONE pile. The player who takes the last matchstick wins!</p>
+            </div>
+
+            <div class="settings-panel">
+                <div class="setting">
+                    <label>Pile 1:</label>
+                    <input type="number" id="pile1-size" value="22" min="1" max="50">
+                </div>
+                <div class="setting">
+                    <label>Pile 2:</label>
+                    <input type="number" id="pile2-size" value="36" min="1" max="50">
+                </div>
+                <div class="setting">
+                    <label>Who Goes First:</label>
+                    <select id="two-first-player">
+                        <option value="player">You</option>
+                        <option value="computer">Computer</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="startTwoPilesGame()">Start Game</button>
+                <button class="btn secondary" onclick="showTwoPilesStrategy()">Show Strategy</button>
+            </div>
+
+            <div id="two-piles-game" class="game-board hidden">
+                <div class="piles-row">
+                    <div class="pile-container" onclick="selectPile(0)">
+                        <h4>Pile 1</h4>
+                        <div class="pile" id="pile1-display"></div>
+                        <p class="pile-count"><span id="pile1-remaining">0</span></p>
+                    </div>
+                    <div class="pile-container" onclick="selectPile(1)">
+                        <h4>Pile 2</h4>
+                        <div class="pile" id="pile2-display"></div>
+                        <p class="pile-count"><span id="pile2-remaining">0</span></p>
+                    </div>
+                </div>
+
+                <div class="turn-info">
+                    <p id="two-turn-text">Your Turn</p>
+                    <p id="two-nim-sum">Nim Sum: <span id="nim-sum-value">0</span></p>
+                    <p id="two-status"></p>
+                </div>
+
+                <div id="two-pile-select" class="hidden">
+                    <p>Selected Pile: <span id="selected-pile-num">-</span></p>
+                    <label>Take:</label>
+                    <input type="number" id="two-take-amount" value="1" min="1">
+                    <button class="btn" onclick="makeTwoPilesMove()">Take</button>
+                </div>
+            </div>
+
+            <div id="two-strategy" class="strategy-panel hidden">
+                <h3>Strategy Analysis</h3>
+                <div id="two-strategy-content"></div>
+            </div>
+        </section>
+
+        <!-- Multi-Piles Section -->
+        <section id="multi-piles" class="section">
+            <h2>Multi-Piles Nim Game</h2>
+            <div class="game-info">
+                <p><strong>Rules:</strong> Multiple piles of matchsticks. Take any number from ONE pile per turn. Last matchstick wins!</p>
+            </div>
+
+            <div class="settings-panel">
+                <div class="setting">
+                    <label>Number of Piles:</label>
+                    <input type="number" id="num-piles" value="3" min="2" max="6" onchange="updatePileInputs()">
+                </div>
+                <div id="pile-inputs" class="pile-inputs">
+                    <div class="setting">
+                        <label>Pile 1:</label>
+                        <input type="number" class="multi-pile-input" value="3" min="1" max="50">
+                    </div>
+                    <div class="setting">
+                        <label>Pile 2:</label>
+                        <input type="number" class="multi-pile-input" value="5" min="1" max="50">
+                    </div>
+                    <div class="setting">
+                        <label>Pile 3:</label>
+                        <input type="number" class="multi-pile-input" value="7" min="1" max="50">
+                    </div>
+                </div>
+                <button class="btn" onclick="startMultiPilesGame()">Start Game</button>
+                <button class="btn secondary" onclick="showMultiPilesStrategy()">Show Strategy</button>
+                <button class="btn secondary" onclick="randomizeMultiPiles()">Random Setup</button>
+            </div>
+
+            <div id="multi-piles-game" class="game-board hidden">
+                <div class="piles-row" id="multi-piles-display"></div>
+
+                <div class="turn-info">
+                    <p id="multi-turn-text">Your Turn</p>
+                    <div id="multi-nim-sum-display" class="nim-sum-breakdown"></div>
+                    <p id="multi-status"></p>
+                </div>
+
+                <div id="multi-pile-select" class="hidden">
+                    <p>Selected Pile: <span id="multi-selected-pile-num">-</span></p>
+                    <label>Take:</label>
+                    <input type="number" id="multi-take-amount" value="1" min="1">
+                    <button class="btn" onclick="makeMultiPilesMove()">Take</button>
+                </div>
+            </div>
+
+            <div id="multi-strategy" class="strategy-panel hidden">
+                <h3>Strategy Analysis</h3>
+                <div id="multi-strategy-content"></div>
+            </div>
+        </section>
+
+        <!-- Theory Section -->
+        <section id="theory" class="section">
+            <h2>Nim Sum Theory</h2>
+            
+            <div class="theory-content">
+                <div class="theory-card">
+                    <h3>What is the Game of Nim?</h3>
+                    <p>Nim is a mathematical strategy game where two players take turns removing objects from distinct piles. On each turn, a player must remove at least one object, and may remove any number of objects provided they all come from the same pile. The goal is typically to be the player who takes the last object.</p>
+                </div>
+
+                <div class="theory-card">
+                    <h3>The Nim Sum (XOR Operation)</h3>
+                    <p>The key to winning Nim is the <strong>Nim Sum</strong>, calculated using the XOR (exclusive or) operation on all pile sizes.</p>
+                    
+                    <div class="example-box">
+                        <h4>XOR Truth Table:</h4>
+                        <table class="xor-table">
+                            <tr><th>A</th><th>B</th><th>A XOR B</th></tr>
+                            <tr><td>0</td><td>0</td><td>0</td></tr>
+                            <tr><td>0</td><td>1</td><td>1</td></tr>
+                            <tr><td>1</td><td>0</td><td>1</td></tr>
+                            <tr><td>1</td><td>1</td><td>0</td></tr>
+                        </table>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example: Piles of 3, 5, 7</h4>
+                        <pre>
+3 in binary:  011
+5 in binary:  101
+7 in binary:  111
+              ---
+XOR result:   001 = 1 (Nim Sum)
+                        </pre>
+                        <p>Since Nim Sum ≠ 0, the first player can guarantee a win!</p>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <h3>The Winning Strategy</h3>
+                    <div class="strategy-rules">
+                        <div class="rule">
+                            <span class="rule-num">1</span>
+                            <div>
+                                <strong>Calculate the Nim Sum</strong>
+                                <p>XOR all pile sizes together.</p>
+                            </div>
+                        </div>
+                        <div class="rule">
+                            <span class="rule-num">2</span>
+                            <div>
+                                <strong>If Nim Sum ≠ 0: You're in a WINNING position!</strong>
+                                <p>Make a move that results in Nim Sum = 0 for your opponent.</p>
+                            </div>
+                        </div>
+                        <div class="rule">
+                            <span class="rule-num">3</span>
+                            <div>
+                                <strong>If Nim Sum = 0: You're in a LOSING position</strong>
+                                <p>Any move you make will give your opponent Nim Sum ≠ 0.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <h3>Finding the Winning Move</h3>
+                    <p>When Nim Sum ≠ 0, to find which pile to reduce:</p>
+                    <ol>
+                        <li>Calculate the Nim Sum (N) of all piles</li>
+                        <li>Find a pile P where P XOR N &lt; P</li>
+                        <li>Reduce that pile to (P XOR N)</li>
+                    </ol>
+                    
+                    <div class="example-box">
+                        <h4>Example: Piles of 22 and 36</h4>
+                        <pre>
+22 in binary: 010110
+36 in binary: 100100
+              ------
+Nim Sum:      110010 = 50
+
+Check pile 22: 22 XOR 50 = 36 (NOT less than 22, can't use)
+Check pile 36: 36 XOR 50 = 22 (22 < 36, YES!)
+
+Solution: Take 14 from pile of 36 (36 - 22 = 14)
+Result: Both piles at 22, Nim Sum = 0
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <h3>Single Pile Strategy (Subtraction Game)</h3>
+                    <p>When you can only take 1 to k objects per turn from a single pile:</p>
+                    <ul>
+                        <li><strong>Winning positions:</strong> Pile size NOT divisible by (k+1)</li>
+                        <li><strong>Losing positions:</strong> Pile size divisible by (k+1)</li>
+                    </ul>
+                    <p>Strategy: Leave your opponent with a multiple of (k+1) after your turn.</p>
+                    
+                    <div class="example-box">
+                        <h4>Example: 12 matchsticks, max take 3</h4>
+                        <p>k+1 = 4, Multiples: 0, 4, 8, 12...</p>
+                        <p>Since 12 is a multiple of 4, the first player is in a LOSING position (if opponent plays perfectly).</p>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <h3>Why Does This Work?</h3>
+                    <p>The XOR strategy works because:</p>
+                    <ul>
+                        <li>The end state (all piles empty) has Nim Sum = 0</li>
+                        <li>From any position with Nim Sum ≠ 0, there exists a move to make Nim Sum = 0</li>
+                        <li>From any position with Nim Sum = 0, ALL moves result in Nim Sum ≠ 0</li>
+                    </ul>
+                    <p>This creates a "trap" - once you achieve Nim Sum = 0, your opponent cannot escape!</p>
+                </div>
+
+                <div class="interactive-calculator">
+                    <h3>Nim Sum Calculator</h3>
+                    <div class="calculator-input">
+                        <label>Enter pile sizes (comma-separated):</label>
+                        <input type="text" id="calc-input" placeholder="e.g., 3, 5, 7">
+                        <button class="btn" onclick="calculateNimSum()">Calculate</button>
+                    </div>
+                    <div id="calc-result" class="calc-result"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Practice Section -->
+        <section id="practice" class="section">
+            <h2>Practice Problems</h2>
+            <p class="practice-intro">Test your understanding with these Math Olympiad-style problems!</p>
+
+            <div id="practice-problem" class="practice-card">
+                <div class="problem-header">
+                    <span class="problem-number">Problem <span id="problem-num">1</span></span>
+                    <span class="problem-difficulty" id="problem-difficulty">Easy</span>
+                </div>
+                <div id="problem-text" class="problem-text"></div>
+                <div class="answer-section">
+                    <input type="number" id="user-answer" placeholder="Your answer">
+                    <button class="btn" onclick="checkAnswer()">Check Answer</button>
+                    <button class="btn secondary" onclick="showHint()">Hint</button>
+                    <button class="btn secondary" onclick="showSolution()">Solution</button>
+                </div>
+                <div id="feedback" class="feedback hidden"></div>
+                <div id="hint-box" class="hint-box hidden"></div>
+                <div id="solution-box" class="solution-box hidden"></div>
+            </div>
+
+            <div class="practice-nav">
+                <button class="btn" onclick="prevProblem()">Previous</button>
+                <button class="btn" onclick="nextProblem()">Next Problem</button>
+                <button class="btn secondary" onclick="randomProblem()">Random</button>
+            </div>
+
+            <div class="score-display">
+                <p>Score: <span id="score">0</span> / <span id="total-attempted">0</span></p>
+            </div>
+        </section>
+
+        <footer>
+            <p>Nim Sum Master - Learn Combinatorial Game Theory</p>
+            <p>Perfect for Math Olympiad preparation!</p>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
