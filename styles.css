@@ -744,3 +744,99 @@ footer {
 .game-over .loser {
     color: var(--danger);
 }
+
+/* Binary and Pairing Tables */
+.binary-table, .pairing-table {
+    border-collapse: collapse;
+    margin: 15px 0;
+    width: 100%;
+    max-width: 600px;
+}
+
+.binary-table th, .binary-table td,
+.pairing-table th, .pairing-table td {
+    border: 1px solid #e2e8f0;
+    padding: 10px 15px;
+    text-align: center;
+}
+
+.binary-table th, .pairing-table th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+
+.binary-table td:first-child, .pairing-table td:first-child {
+    background: #f8fafc;
+    font-weight: 500;
+    text-align: left;
+}
+
+.pairing-table .count-row td {
+    background: #fef3c7;
+    font-weight: bold;
+}
+
+/* Highlight Card for Important Sections */
+.theory-card.highlight-card {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-left: 4px solid var(--warning);
+}
+
+.theory-card.highlight-card h3 {
+    color: #92400e;
+}
+
+/* XOR Explanation Box */
+.xor-explanation {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.xor-explanation p {
+    margin: 0;
+    color: #1e40af;
+}
+
+/* Enhanced XOR Table */
+.xor-table th:last-child {
+    min-width: 100px;
+}
+
+.xor-table td:last-child {
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+/* Superscript styling */
+sup {
+    font-size: 0.7em;
+    vertical-align: super;
+}
+
+/* Theory card list styling */
+.theory-card ul li, .theory-card ol li {
+    margin-bottom: 8px;
+}
+
+/* Example box paragraph spacing */
+.example-box p {
+    margin-bottom: 10px;
+}
+
+.example-box p:last-child {
+    margin-bottom: 0;
+}
+
+.example-box ul {
+    margin: 10px 0 10px 20px;
+}
+
+.example-box ul li {
+    margin-bottom: 5px;
+}
+

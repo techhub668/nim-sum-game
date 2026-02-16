@@ -106,7 +106,7 @@
         <section id="two-piles" class="section">
             <h2>Two Piles Game</h2>
             <div class="game-info">
-                <p><strong>Rules:</strong> Two players take turns removing any number of matchsticks from ONE pile. The player who takes the last matchstick wins!</p>
+                <p><strong>Rules:</strong> There are 2 piles of different number of matchsticks. Two players take turns removing any number of matchsticks from ONE of the piles. The player who takes the last matchstick wins! How many matchsticks should the first mover take to guarantee a win?</p>
             </div>
 
             <div class="settings-panel">
@@ -228,30 +228,224 @@
                 </div>
 
                 <div class="theory-card">
-                    <h3>The Nim Sum (XOR Operation)</h3>
-                    <p>The key to winning Nim is the <strong>Nim Sum</strong>, calculated using the XOR (exclusive or) operation on all pile sizes.</p>
+                    <h3>Understanding Binary Numbers</h3>
+                    <p>Before we learn the winning strategy, we need to understand <strong>binary numbers</strong> - the language computers use!</p>
+                    
+                    <div class="example-box">
+                        <h4>What is Binary?</h4>
+                        <p>In our everyday life, we use the <strong>decimal system</strong> (base 10) with digits 0-9. Binary is the <strong>base 2 system</strong> that only uses two digits: <strong>0</strong> and <strong>1</strong>.</p>
+                        <p>Each position in binary represents a power of 2, just like decimal positions represent powers of 10.</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>The 4-2-1 Method (Easy Way to Understand Binary!)</h4>
+                        <p>Think of binary as breaking down numbers into groups of <strong>powers of 2</strong>:</p>
+                        <table class="binary-table">
+                            <tr>
+                                <th>Position</th>
+                                <th>...</th>
+                                <th>16</th>
+                                <th>8</th>
+                                <th>4</th>
+                                <th>2</th>
+                                <th>1</th>
+                            </tr>
+                            <tr>
+                                <td>Power of 2</td>
+                                <td>...</td>
+                                <td>2<sup>4</sup></td>
+                                <td>2<sup>3</sup></td>
+                                <td>2<sup>2</sup></td>
+                                <td>2<sup>1</sup></td>
+                                <td>2<sup>0</sup></td>
+                            </tr>
+                        </table>
+                        <p style="margin-top: 15px;">To convert a number to binary, ask: "Can I fit this power of 2 into my number?"</p>
+                        <ul>
+                            <li>If YES, write <strong>1</strong> and subtract that value</li>
+                            <li>If NO, write <strong>0</strong> and move to the next smaller power</li>
+                        </ul>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example: Why is 3 = 011 in binary?</h4>
+                        <p>Let's break down <strong>3</strong> using powers of 2:</p>
+                        <ul>
+                            <li>Can we fit <strong>4</strong> into 3? NO (4 > 3) → write <strong>0</strong></li>
+                            <li>Can we fit <strong>2</strong> into 3? YES (2 ≤ 3) → write <strong>1</strong>, remaining: 3-2 = 1</li>
+                            <li>Can we fit <strong>1</strong> into 1? YES (1 ≤ 1) → write <strong>1</strong>, remaining: 1-1 = 0</li>
+                        </ul>
+                        <p><strong>Result: 3 = 0×4 + 1×2 + 1×1 = 011</strong></p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example: Why is 5 = 101 in binary?</h4>
+                        <p>Let's break down <strong>5</strong>:</p>
+                        <ul>
+                            <li>Can we fit <strong>4</strong> into 5? YES → write <strong>1</strong>, remaining: 5-4 = 1</li>
+                            <li>Can we fit <strong>2</strong> into 1? NO (2 > 1) → write <strong>0</strong></li>
+                            <li>Can we fit <strong>1</strong> into 1? YES → write <strong>1</strong>, remaining: 0</li>
+                        </ul>
+                        <p><strong>Result: 5 = 1×4 + 0×2 + 1×1 = 101</strong></p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example: Why is 7 = 111 in binary?</h4>
+                        <p>Let's break down <strong>7</strong>:</p>
+                        <ul>
+                            <li>Can we fit <strong>4</strong> into 7? YES → write <strong>1</strong>, remaining: 7-4 = 3</li>
+                            <li>Can we fit <strong>2</strong> into 3? YES → write <strong>1</strong>, remaining: 3-2 = 1</li>
+                            <li>Can we fit <strong>1</strong> into 1? YES → write <strong>1</strong>, remaining: 0</li>
+                        </ul>
+                        <p><strong>Result: 7 = 1×4 + 1×2 + 1×1 = 111</strong></p>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <h3>What is XOR (Exclusive OR)?</h3>
+                    <p>XOR is a special operation that compares two bits (0 or 1) and follows this simple rule:</p>
+                    <div class="xor-explanation">
+                        <p><strong>"If the bits are DIFFERENT, result is 1. If they're the SAME, result is 0."</strong></p>
+                    </div>
                     
                     <div class="example-box">
                         <h4>XOR Truth Table:</h4>
                         <table class="xor-table">
-                            <tr><th>A</th><th>B</th><th>A XOR B</th></tr>
-                            <tr><td>0</td><td>0</td><td>0</td></tr>
-                            <tr><td>0</td><td>1</td><td>1</td></tr>
-                            <tr><td>1</td><td>0</td><td>1</td></tr>
-                            <tr><td>1</td><td>1</td><td>0</td></tr>
+                            <tr><th>A</th><th>B</th><th>A XOR B</th><th>Why?</th></tr>
+                            <tr><td>0</td><td>0</td><td>0</td><td>Same → 0</td></tr>
+                            <tr><td>0</td><td>1</td><td>1</td><td>Different → 1</td></tr>
+                            <tr><td>1</td><td>0</td><td>1</td><td>Different → 1</td></tr>
+                            <tr><td>1</td><td>1</td><td>0</td><td>Same → 0</td></tr>
                         </table>
                     </div>
 
                     <div class="example-box">
+                        <h4>Think of XOR as "Odd One Out"</h4>
+                        <p>When you XOR multiple numbers together column by column:</p>
+                        <ul>
+                            <li>If there's an <strong>ODD</strong> number of 1s in a column → result is <strong>1</strong></li>
+                            <li>If there's an <strong>EVEN</strong> number of 1s in a column → result is <strong>0</strong></li>
+                        </ul>
+                        <p>This is why pairs of identical bits "cancel out" to zero!</p>
+                    </div>
+                </div>
+
+                <div class="theory-card">
+                    <h3>The Nim Sum (XOR Operation)</h3>
+                    <p>The key to winning Nim is the <strong>Nim Sum</strong>, calculated by XORing all pile sizes together.</p>
+
+                    <div class="example-box">
                         <h4>Example: Piles of 3, 5, 7</h4>
                         <pre>
-3 in binary:  011
-5 in binary:  101
-7 in binary:  111
+3 in binary:  011  (0×4 + 1×2 + 1×1)
+5 in binary:  101  (1×4 + 0×2 + 1×1)
+7 in binary:  111  (1×4 + 1×2 + 1×1)
               ---
 XOR result:   001 = 1 (Nim Sum)
+
+Column by column:
+- 4's column: 0 XOR 1 XOR 1 = 0 (even 1s)
+- 2's column: 1 XOR 0 XOR 1 = 0 (even 1s)
+- 1's column: 1 XOR 1 XOR 1 = 1 (odd 1s)
                         </pre>
                         <p>Since Nim Sum ≠ 0, the first player can guarantee a win!</p>
+                    </div>
+                </div>
+
+                <div class="theory-card highlight-card">
+                    <h3>The Easy 4-2-1 Pairing Method</h3>
+                    <p>Here's a simpler way to think about Nim Sum without doing binary math in your head!</p>
+                    
+                    <div class="example-box">
+                        <h4>The Pairing Strategy</h4>
+                        <p>For each power of 2 (1, 2, 4, 8, 16...), count how many piles have that component:</p>
+                        <ul>
+                            <li>If the count is <strong>EVEN</strong> (0, 2, 4...) → That position is "balanced" (good!)</li>
+                            <li>If the count is <strong>ODD</strong> (1, 3, 5...) → That position is "unbalanced" (contributes to Nim Sum)</li>
+                        </ul>
+                        <p><strong>Goal: Make ALL positions balanced (even counts) to achieve Nim Sum = 0!</strong></p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example: Piles of 3, 5, 7 using Pairing</h4>
+                        <table class="pairing-table">
+                            <tr>
+                                <th>Pile</th>
+                                <th>Has 4?</th>
+                                <th>Has 2?</th>
+                                <th>Has 1?</th>
+                            </tr>
+                            <tr>
+                                <td>3 = 2+1</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>5 = 4+1</td>
+                                <td>Yes</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>7 = 4+2+1</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr class="count-row">
+                                <td><strong>Count:</strong></td>
+                                <td>2 (even)</td>
+                                <td>2 (even)</td>
+                                <td>3 (odd!)</td>
+                            </tr>
+                        </table>
+                        <p style="margin-top: 15px;">The "1" column has an odd count (3), so Nim Sum ≠ 0.</p>
+                        <p><strong>Winning move:</strong> Remove 1 from pile of 3, making it 2. Now all columns are even!</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Example: Piles of 1, 3, 5, 7 - A Famous Nim Position!</h4>
+                        <table class="pairing-table">
+                            <tr>
+                                <th>Pile</th>
+                                <th>Has 4?</th>
+                                <th>Has 2?</th>
+                                <th>Has 1?</th>
+                            </tr>
+                            <tr>
+                                <td>1 = 1</td>
+                                <td>No</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>3 = 2+1</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>5 = 4+1</td>
+                                <td>Yes</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>7 = 4+2+1</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr class="count-row">
+                                <td><strong>Count:</strong></td>
+                                <td>2 (even)</td>
+                                <td>2 (even)</td>
+                                <td>4 (even)</td>
+                            </tr>
+                        </table>
+                        <p style="margin-top: 15px;"><strong>All columns are even!</strong> Nim Sum = 0. The first player is in a LOSING position!</p>
+                        <p>This is a famous "losing" starting position in Nim.</p>
                     </div>
                 </div>
 
@@ -262,7 +456,7 @@ XOR result:   001 = 1 (Nim Sum)
                             <span class="rule-num">1</span>
                             <div>
                                 <strong>Calculate the Nim Sum</strong>
-                                <p>XOR all pile sizes together.</p>
+                                <p>XOR all pile sizes together (or use the pairing method).</p>
                             </div>
                         </div>
                         <div class="rule">
@@ -294,8 +488,8 @@ XOR result:   001 = 1 (Nim Sum)
                     <div class="example-box">
                         <h4>Example: Piles of 22 and 36</h4>
                         <pre>
-22 in binary: 010110
-36 in binary: 100100
+22 in binary: 010110  (16+4+2 = 22)
+36 in binary: 100100  (32+4 = 36)
               ------
 Nim Sum:      110010 = 50
 
@@ -305,6 +499,50 @@ Check pile 36: 36 XOR 50 = 22 (22 < 36, YES!)
 Solution: Take 14 from pile of 36 (36 - 22 = 14)
 Result: Both piles at 22, Nim Sum = 0
                         </pre>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Using Pairing Method for 22 and 36:</h4>
+                        <table class="pairing-table">
+                            <tr>
+                                <th>Pile</th>
+                                <th>32</th>
+                                <th>16</th>
+                                <th>8</th>
+                                <th>4</th>
+                                <th>2</th>
+                                <th>1</th>
+                            </tr>
+                            <tr>
+                                <td>22 = 16+4+2</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>No</td>
+                            </tr>
+                            <tr>
+                                <td>36 = 32+4</td>
+                                <td>Yes</td>
+                                <td>No</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>No</td>
+                                <td>No</td>
+                            </tr>
+                            <tr class="count-row">
+                                <td><strong>Count:</strong></td>
+                                <td>1 (odd)</td>
+                                <td>1 (odd)</td>
+                                <td>0 (even)</td>
+                                <td>2 (even)</td>
+                                <td>1 (odd)</td>
+                                <td>0 (even)</td>
+                            </tr>
+                        </table>
+                        <p style="margin-top: 15px;">Columns 32, 16, and 2 are odd. We need to balance them!</p>
+                        <p><strong>Solution:</strong> Change pile 36 to 22. New 22 = 16+4+2, so now both piles are identical and all columns are even (paired)!</p>
                     </div>
                 </div>
 
@@ -326,13 +564,18 @@ Result: Both piles at 22, Nim Sum = 0
 
                 <div class="theory-card">
                     <h3>Why Does This Work?</h3>
-                    <p>The XOR strategy works because:</p>
+                    <p>The XOR/pairing strategy works because:</p>
                     <ul>
                         <li>The end state (all piles empty) has Nim Sum = 0</li>
                         <li>From any position with Nim Sum ≠ 0, there exists a move to make Nim Sum = 0</li>
                         <li>From any position with Nim Sum = 0, ALL moves result in Nim Sum ≠ 0</li>
                     </ul>
                     <p>This creates a "trap" - once you achieve Nim Sum = 0, your opponent cannot escape!</p>
+                    
+                    <div class="example-box">
+                        <h4>The Key Insight</h4>
+                        <p>When all columns are "paired" (even counts), removing ANY amount from ONE pile will break at least one pairing. Your opponent will always give you an unbalanced position, and you can always rebalance it!</p>
+                    </div>
                 </div>
 
                 <div class="interactive-calculator">
