@@ -38,10 +38,31 @@ header {
 }
 
 /* Language Toggle */
-.lang-toggle {
+.top-right-btns {
     position: absolute;
     top: 20px;
     right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-btn {
+    background: #7c3aed;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.top-btn:hover {
+    background: #6d28d9;
+}
+
+.lang-toggle {
     display: flex;
     gap: 5px;
     background: rgba(255,255,255,0.2);
